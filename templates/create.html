@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Entry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="max-w-4xl mx-auto p-4">
+      <form action="/create" method="POST" class="bg-white p-6">
+        <div class="flex justify-between items-center mb-4 pb-4 border-b">
+          <div class="flex items-center">
+            <div class="mb-4">
+              <input type="text" id="title" name="title" placeholder="Title" required
+              class="w-full p-2 text-4xl font-bold focus:outline-none">
+            </div>
+          </div>
+          <div>
+            <button type="submit" class="text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800">
+            Create Entry
+            </button>
+          </div>
+        </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label for="year" class="text-lg mr-2">Year:</label>
+              <input type="number" id="year" name="year" value="2000" required class="border-2 border-blue-800 rounded-md">
+              <div>
+              <label for="media" class="text-lg mr-2">Type of physical media:</label>
+                <select id="media" name="media" class="mr-2">
+                  <option value="cd">CD</option>
+                  <option value="dvd">DVD</option>
+                  <option value="bd">BlueRay</option>
+                </select>
+              </div>
+              <label for="is_digital" class="text-lg mr-2">Media is digitized:</label>
+              <input type="checkbox" id="is_digital" name="is_digital" class="mr-2">
+            </div>
+            <div>
+              <textarea id="content" name="content" rows="5" placeholder="Plot" required
+              class="w-full p-4 text-md border-2 border-blue-800 rounded-md"></textarea>
+            </div>
+          </div>
+      </form>
+    </div>
+  </body>
+</html>

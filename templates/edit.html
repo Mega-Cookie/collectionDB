@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Entry: {{.Title}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="max-w-4xl mx-auto p-4">
+      <form action="/entries/{{.ID}}/edit" method="POST" class="bg-white p-6">
+        <div class="flex justify-between items-center mb-4 pb-4 border-b">
+          <div class="flex items-center">
+            <div class="mb-4">
+              <input type="text" id="title" name="title" value="{{.Title}}" required
+              class="w-full p-2 text-4xl font-bold focus:outline-none">
+            </div>
+          </div>
+          <div>
+            <button type="submit" class="text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md outline">
+            Edit Entry
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label for="year" class="text-lg mr-2">Year:</label>
+            <input type="number" id="year" name="year" value="{{.Year}}" required>
+          <div>
+            <label for="media" class="text-lg mr-2">Type of physical media:</label>
+            <select id="media" name="media" class="mr-2">
+              <option value="{{.Media}}">--unchanged--</option>
+              <option value="cd">CD</option>
+              <option value="dvd">DVD</option>
+              <option value="bd">BlueRay</option>
+            </select>
+          </div>
+          <label for="is_digital" class="text-lg mr-2">Media is digitized:</label>
+          {{if .IsDigital}}
+            <input type="checkbox" id="is_digital" name="is_digital" class="mr-2" checked>
+          {{else}}
+            <input type="checkbox" id="is_digital" name="is_digital" class="mr-2">
+          {{end}}
+          </div>
+          <div class="shadow-xl rounded shadow-blue-500/50">
+            <textarea id="content" name="content" rows="5" required
+            class="w-full p-2 text-lg">{{.Content}}</textarea>
+          </div>
+        </div>
+      </form>
+      <p class="text-sm text-gray-500"><em>Created on: {{.CreatedAt}} - Edited on: {{.EditedAt}}</em></p>
+    </div>
+  </body>
+</html>
