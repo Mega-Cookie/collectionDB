@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Entry: {{.Title}}</title>
+    <title>Edit Entry: {{.Entry.Title}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
@@ -12,7 +12,7 @@
         <div class="flex justify-between items-center mb-4 pb-4 border-b">
           <div class="flex items-center">
             <div class="mb-4">
-              <input type="text" id="title" name="title" value="{{.Title}}" required
+              <input type="text" id="title" name="title" value="{{.Entry.Title}}" required
               class="w-full p-2 text-4xl font-bold focus:outline-none">
             </div>
           </div>
@@ -25,30 +25,36 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label for="year" class="text-lg mr-2">Year:</label>
-            <input type="number" id="year" name="year" value="{{.Year}}" required>
+            <input type="number" id="year" name="year" value="{{.Entry.Year}}" required>
           <div>
-            <label for="media" class="text-lg mr-2">Type of physical media:</label>
-            <select id="media" name="media" class="mr-2">
-              <option value="{{.Media}}">--unchanged--</option>
+            <label for="medium" class="text-lg mr-2">Type of physical media:</label>
+            <select id="medium" name="medium" class="mr-2">
+              <option value="{{.Entry.Medium}}">--unchanged--</option>
               <option value="cd">CD</option>
               <option value="dvd">DVD</option>
               <option value="bd">BlueRay</option>
             </select>
           </div>
           <label for="is_digital" class="text-lg mr-2">Media is digitized:</label>
-          {{if .IsDigital}}
+          {{if .Entry.IsDigital}}
             <input type="checkbox" id="is_digital" name="is_digital" class="mr-2" checked>
           {{else}}
             <input type="checkbox" id="is_digital" name="is_digital" class="mr-2">
           {{end}}
+          <div>
+          <label for="collid" class="text-lg mr-2">Collection:</label>
+          <select id="collid" name="collid" class="mr-2">
+          <option value="{{.Entry.CollID}}">{{.Entry.CollName}}</option>
+          </select>
+          </div>
           </div>
           <div class="shadow-xl rounded shadow-blue-500/50">
-            <textarea id="content" name="content" rows="5" required
-            class="w-full p-2 text-lg">{{.Content}}</textarea>
+            <textarea id="plot" name="plot" rows="5" required
+            class="w-full p-2 text-lg">{{.Entry.Plot}}</textarea>
           </div>
         </div>
       </form>
-      <p class="text-sm text-gray-500"><em>Created on: {{.CreatedAt}} - Edited on: {{.EditedAt}}</em></p>
+      <p class="text-sm text-gray-500"><em>Created on: {{.Entry.CreatedAt}} - Edited on: {{.Entry.EditedAt}}</em></p>
     </div>
   </body>
 </html>
