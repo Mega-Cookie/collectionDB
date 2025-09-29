@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"collectionDB/collections"
+	"collectionDB/collect"
 	"collectionDB/entries"
 	"database/sql"
 	"log"
@@ -30,8 +30,9 @@ func getSystemInfo() {
 
 	// Create a new scanner to read the file line by line
 	scanner := bufio.NewScanner(file)
-
-	VERSION = scanner.Text() // Get the line as a string
+	for scanner.Scan() {
+		VERSION = scanner.Text() // Get the line as a string
+	}
 
 	// Check for errors during the scan
 	if err := scanner.Err(); err != nil {
@@ -108,16 +109,18 @@ func main() {
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.LoadHTMLGlob("templates/*")
-	router.GET("/", entries.ListEntries(db))
-	router.GET("/collections", collections.ListCollections(db))
-	router.GET("/create_entry", entries.GetCollections(db), entries.ShowCreateEntryPage)
+	router.GET("/", entries.List(db))
+	router.GET("/create_entry", entries.ShowCreateEntryPage)
 	router.POST("/create_entry", entries.CreateEntry(db))
-	router.GET("/create_collection", collections.ShowCreateCollectionPage)
-	router.POST("/create_collection", collections.CreateCollection(db))
+	router.GET("/entries/:id/edit", entries.ShowEditEntryPage(db))
+	router.POST("/entries/:id/edit", entries.EditEntry(db))
 	router.POST("/entries/:id/delete", entries.DeleteEntry(db))
 	router.GET("/entries/:id", entries.PreviewSharedEntry(db))
-	router.GET("/entries/:id/edit_entry", entries.ShowEditEntryPage(db))
-	router.POST("/entries/:id/edit_entry", entries.EditEntry(db))
+	router.GET("/create_collection", collect.ShowCreateCollectionPage)
+	router.POST("/create_collection", collect.CreateCollection(db))
+	router.GET("/collections/:id/edit", collect.ShowEditCollectionPage(db))
+	router.POST("/collections/:id/edit", collect.EditCollection(db))
+	router.POST("/collections/:id/delete", collect.DeleteCollection(db))
 	port := ":8080"
 	log.Printf("Server is running on http://localhost%s", port)
 	if err := router.Run(port); err != nil {

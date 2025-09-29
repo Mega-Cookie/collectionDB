@@ -1,6 +1,7 @@
 package entries
 
 import (
+	"collectionDB/collect"
 	"database/sql"
 	"net/http"
 	"time"
@@ -21,16 +22,16 @@ type Entry struct {
 	IsDigital bool      `json:"is_digital"`
 }
 type Collection struct {
-	CollID int    `json:"collid"`
-	Name   string `json:"name"`
+	CollID      int       `json:"collid"`
+	Name        string    `json:"name"`
+	Type        string    `json:"type"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+	EditedAt    time.Time `json:"edited_at"`
 }
 
-var collections []Collection
-
 func ShowCreateEntryPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "create_entry.html", gin.H{
-		"Collections": collections,
-	})
+	c.HTML(http.StatusOK, "create_entry.html", gin.H{})
 }
 func CreateEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -65,8 +66,9 @@ func EditEntry(db *sql.DB) gin.HandlerFunc {
 		c.Redirect(http.StatusFound, "/")
 	}
 }
-func ListEntries(db *sql.DB) gin.HandlerFunc {
+func List(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		collections := collect.ListCollections(db)
 		rows, err := db.Query("SELECT e.*, c.NAME AS COLLNAME FROM `entries` e JOIN collections c on c.collectionID = e.collectionID")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve entries"})
@@ -83,26 +85,9 @@ func ListEntries(db *sql.DB) gin.HandlerFunc {
 			entries = append(entries, entry)
 		}
 		c.HTML(http.StatusOK, "index.html", gin.H{
-			"Entries": entries,
+			"Entries":     entries,
+			"Collections": collections,
 		})
-	}
-}
-func GetCollections(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		rows, err := db.Query("SELECT collectionID, NAME FROM collections")
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve entries"})
-			return
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var collection Collection
-			if err := rows.Scan(&collection.CollID, &collection.Name); err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning entries"})
-				return
-			}
-			collections = append(collections, collection)
-		}
 	}
 }
 func DeleteEntry(db *sql.DB) gin.HandlerFunc {
@@ -130,7 +115,6 @@ func PreviewSharedEntry(db *sql.DB) gin.HandlerFunc {
 	}
 }
 func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
-	GetCollections(db)
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
@@ -140,9 +124,9 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 			c.HTML(http.StatusNotFound, "404.html", nil)
 			return
 		}
+		defer collect.ListCollections(db)
 		c.HTML(http.StatusOK, "edit_entry.html", gin.H{
-			"Entry":       entry,
-			"Collections": collections,
+			"Entry": entry,
 		})
 	}
 }
