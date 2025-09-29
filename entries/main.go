@@ -3,11 +3,14 @@ package entries
 import (
 	"collectionDB/collect"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
+
+var db *sql.DB
 
 type Entry struct {
 	ID        int       `json:"id"`
@@ -21,17 +24,14 @@ type Entry struct {
 	EditedAt  time.Time `json:"edited_at"`
 	IsDigital bool      `json:"is_digital"`
 }
-type Collection struct {
-	CollID      int       `json:"collid"`
-	Name        string    `json:"name"`
-	Type        string    `json:"type"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	EditedAt    time.Time `json:"edited_at"`
-}
 
-func ShowCreateEntryPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "create_entry.html", gin.H{})
+func ShowCreateEntryPage(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		collections := collect.ListCollections(db)
+		c.HTML(http.StatusOK, "create_entry.html", gin.H{
+			"Collections": collections,
+		})
+	}
 }
 func CreateEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -53,12 +53,13 @@ func EditEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		title := c.PostForm("title")
 		plot := c.PostForm("plot")
-		media := c.PostForm("media")
+		medium := c.PostForm("medium")
 		year := c.PostForm("year")
+		collection := c.PostForm("collid")
 		isDigital := c.PostForm("is_digital") == "on"
 		id := c.Param("id")
-		updateTableQuery := `UPDATE entries SET title = ?, year = ?, content = ?, media = ?, is_digital = ?, edited_at = CURRENT_TIMESTAMP where id = ?`
-		_, err := db.Exec(updateTableQuery, title, year, plot, media, isDigital, id)
+		updateTableQuery := `UPDATE entries SET TITLE = ?, YEAR = ?, PLOT = ?, MEDIUM = ?, IS_DIGITAL = ?, collectionID = ?, EDITED_AT = CURRENT_TIMESTAMP where entryID = ?`
+		_, err := db.Exec(updateTableQuery, title, year, plot, medium, isDigital, collection, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit entry"})
 			return
@@ -66,29 +67,18 @@ func EditEntry(db *sql.DB) gin.HandlerFunc {
 		c.Redirect(http.StatusFound, "/")
 	}
 }
-func List(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		collections := collect.ListCollections(db)
-		rows, err := db.Query("SELECT e.*, c.NAME AS COLLNAME FROM `entries` e JOIN collections c on c.collectionID = e.collectionID")
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve entries"})
-			return
-		}
-		defer rows.Close()
-		var entries []Entry
-		for rows.Next() {
-			var entry Entry
-			if err := rows.Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.Medium, &entry.IsDigital, &entry.CollID, &entry.CreatedAt, &entry.EditedAt, &entry.CollName); err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning entries"})
-				return
-			}
-			entries = append(entries, entry)
-		}
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"Entries":     entries,
-			"Collections": collections,
-		})
+func ListEntries(db *sql.DB) (entries []Entry) {
+	rows, err := db.Query("SELECT e.*, c.NAME AS COLLNAME FROM `entries` e JOIN collections c on c.collectionID = e.collectionID")
+	if err != nil {
+		fmt.Println("error: Failed to retrieve entries")
 	}
+	defer rows.Close()
+	for rows.Next() {
+		var entry Entry
+		rows.Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.Medium, &entry.IsDigital, &entry.CollID, &entry.CreatedAt, &entry.EditedAt, &entry.CollName)
+		entries = append(entries, entry)
+	}
+	return
 }
 func DeleteEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -115,6 +105,7 @@ func PreviewSharedEntry(db *sql.DB) gin.HandlerFunc {
 	}
 }
 func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
+	collections := collect.ListCollections(db)
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
@@ -124,9 +115,9 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 			c.HTML(http.StatusNotFound, "404.html", nil)
 			return
 		}
-		defer collect.ListCollections(db)
 		c.HTML(http.StatusOK, "edit_entry.html", gin.H{
-			"Entry": entry,
+			"Entry":       entry,
+			"Collections": collections,
 		})
 	}
 }

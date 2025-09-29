@@ -1,7 +1,6 @@
 package collect
 
 import (
-	"collectionDB/collect"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -11,28 +10,28 @@ import (
 )
 
 type Collection struct {
-	CollID      int       `json:"collid"`
+	CollID      int       `json:"id"`
 	Name        string    `json:"name"`
 	Type        string    `json:"type"`
 	Description string    `json:"description"`
+	Entrycount  int       `json:"entrycount"`
 	CreatedAt   time.Time `json:"created_at"`
 	EditedAt    time.Time `json:"edited_at"`
 }
 
 func ListCollections(db *sql.DB) (collections []Collection) {
-	rows, err := db.Query("SELECT collectionID, NAME, TYPE, DESCRIPTION, CREATED_AT, EDITED_AT FROM collections")
+	rows, err := db.Query("SELECT c.*, count(e.collectionID) AS ENTRYCOUNT FROM `collections` c LEFT OUTER JOIN entries e on c.collectionID = e.collectionID GROUP BY c.collectionID")
 	if err != nil {
 		fmt.Println("error: Failed to retrieve collections")
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var collection Collection
-		rows.Scan(&collection.CollID, &collection.Name, &collection.Type, &collection.Description, &collection.CreatedAt, &collection.EditedAt)
+		rows.Scan(&collection.CollID, &collection.Name, &collection.Type, &collection.Description, &collection.CreatedAt, &collection.EditedAt, &collection.Entrycount)
 		collections = append(collections, collection)
 	}
 	return
 }
-
 func ShowCreateCollectionPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "create_collection.html", nil)
 }
@@ -52,29 +51,26 @@ func CreateCollection(db *sql.DB) gin.HandlerFunc {
 func ShowEditCollectionPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		var entry Collection
-		query := "SELECT e.*, c.NAME AS COLLNAME FROM `entries` e JOIN collections c on c.collectionID = e.collectionID WHERE entryID = ?"
-		err := db.QueryRow(query, id).Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.Medium, &entry.IsDigital, &entry.CollID, &entry.CreatedAt, &entry.EditedAt, &entry.CollName)
+		var collection Collection
+		query := "SELECT c.*, count(e.collectionID) AS ENTRYCOUNT FROM `collections` c LEFT OUTER JOIN entries e on c.collectionID = e.collectionID WHERE c.collectionID = ?"
+		err := db.QueryRow(query, id).Scan(&collection.CollID, &collection.Name, &collection.Type, &collection.Description, &collection.CreatedAt, &collection.EditedAt, &collection.Entrycount)
 		if err != nil {
 			c.HTML(http.StatusNotFound, "404.html", nil)
 			return
 		}
-		defer collect.ListCollections(db)
-		c.HTML(http.StatusOK, "edit_entry.html", gin.H{
-			"Entry": entry,
+		c.HTML(http.StatusOK, "edit_collection.html", gin.H{
+			"Collection": collection,
 		})
 	}
 }
 func EditCollection(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		title := c.PostForm("title")
-		plot := c.PostForm("plot")
-		media := c.PostForm("media")
-		year := c.PostForm("year")
-		isDigital := c.PostForm("is_digital") == "on"
+		Name := c.PostForm("name")
+		Type := c.PostForm("type")
+		Description := c.PostForm("description")
 		id := c.Param("id")
-		updateTableQuery := `UPDATE entries SET title = ?, year = ?, content = ?, media = ?, is_digital = ?, edited_at = CURRENT_TIMESTAMP where id = ?`
-		_, err := db.Exec(updateTableQuery, title, year, plot, media, isDigital, id)
+		updateTableQuery := `UPDATE collections SET NAME = ?, TYPE = ?, Description = ?, EDITED_AT = CURRENT_TIMESTAMP where collectionID = ?`
+		_, err := db.Exec(updateTableQuery, Name, Type, Description, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit entry"})
 			return
@@ -85,7 +81,7 @@ func EditCollection(db *sql.DB) gin.HandlerFunc {
 func DeleteCollection(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM collections WHERE entryID = ?`, id)
+		_, err := db.Exec(`DELETE FROM collections WHERE collectionID = ?`, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete collection!"})
 			return

@@ -6,6 +6,7 @@ import (
 	"collectionDB/entries"
 	"database/sql"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -80,7 +81,7 @@ func initDB() {
 		PLOT TEXT NOT NULL,
 		MEDIUM TEXT NOT NULL,
 		IS_DIGITAL BOOL NOT NULL DEFAULT 0,
-		collectionID INTEGER,
+		collectionID INTEGER DEFAUL NULL,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(collectionID) REFERENCES collections(collectionID)
@@ -103,14 +104,25 @@ func initDB() {
 	}
 }
 
+func List(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		collections := collect.ListCollections(db)
+		entries := entries.ListEntries(db)
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"Entries":     entries,
+			"Collections": collections,
+		})
+	}
+}
+
 func main() {
 	initDB()
 	getSystemInfo()
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.LoadHTMLGlob("templates/*")
-	router.GET("/", entries.List(db))
-	router.GET("/create_entry", entries.ShowCreateEntryPage)
+	router.GET("/", List(db))
+	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
 	router.GET("/entries/:id/edit", entries.ShowEditEntryPage(db))
 	router.POST("/entries/:id/edit", entries.EditEntry(db))
