@@ -30,10 +30,10 @@
           <div>
             <label for="medium" class="text-lg mr-2">Type of physical media:</label>
             <select id="medium" name="medium" class="mr-2">
-              <option value="{{.Entry.Medium}}">--unchanged--</option>
               <option value="cd">CD</option>
               <option value="dvd">DVD</option>
               <option value="bd">BlueRay</option>
+              <option value="{{.Entry.Medium}}" selected hidden>--unchanged--</option>
             </select>
           </div>
           <div>
@@ -42,7 +42,7 @@
           {{range .Collections}}
           <option value="{{.CollID}}">{{.Name}}</option>
           {{end}}
-          <option value="{{.Entry.CollID}}" selected hidden>--unchanged--</option>
+          <option value="{{.Entry.CollID}}" selected hidden>{{.Entry.CollName}}</option>
           </select>
           </div>
           <label for="is_digital" class="text-lg mr-2">Media is digitized:</label>
