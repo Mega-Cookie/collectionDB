@@ -11,7 +11,7 @@ type Mediatypes struct {
 }
 
 func ListMediatypes(db *sql.DB) (mediatypes []Mediatypes) {
-	rows, err := db.Query("SELECT * mediatypes")
+	rows, err := db.Query("SELECT * FROM mediatypes")
 	if err != nil {
 		fmt.Println("error: Failed to retrieve collections")
 	}

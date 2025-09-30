@@ -59,23 +59,26 @@ func CreateCollection(db *sql.DB) gin.HandlerFunc {
 }
 func ShowEditCollectionPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		categories := stockdata.ListCategories(db)
 		id := c.Param("id")
 		var collection Collection
-		query := "SELECT c.*, count(e.collectionID) AS ENTRYCOUNT FROM `collections` c LEFT OUTER JOIN entries e on c.collectionID = e.collectionID WHERE c.collectionID = ?"
+		query := "SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.CategoryID = c.CategoryID LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID WHERE c.collectionID = ?"
 		err := db.QueryRow(query, id).Scan(&collection.CollID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Entrycount, &collection.Category.Name)
 		if err != nil {
 			c.HTML(http.StatusNotFound, "404.html", nil)
+			fmt.Println(err)
 			return
 		}
 		c.HTML(http.StatusOK, "edit_collection.html", gin.H{
 			"Collection": collection,
+			"Categories": categories,
 		})
 	}
 }
 func EditCollection(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		Name := c.PostForm("name")
-		CatID := c.PostForm("catio")
+		CatID := c.PostForm("catid")
 		Description := c.PostForm("description")
 		id := c.Param("id")
 		updateTableQuery := `UPDATE collections SET NAME = ?, CategoryID = ?, Description = ?, EDITED_AT = CURRENT_TIMESTAMP where collectionID = ?`
