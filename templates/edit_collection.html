@@ -25,12 +25,12 @@
         </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label for="type" class="text-lg mr-2">Type:</label>
-                <select id="type" name="type" class="mr-2">
-                  <option value="{{.Collection.Type}}" selected hidden>--unchanged--</option>
-                  <option value="books">Books</option>
-                  <option value="movies">Movies</option>
-                  <option value="tv">TV-Series</option>
+              <label for="catid" class="text-lg mr-2">Category:</label>
+                <select id="catid" name="catid" class="mr-2" required>
+                  {{range .Categories}}
+                  <option value="{{.CatID}}">{{.Name}}</option>
+                  {{end}}
+                  <option value="{{.Collection.Category.ID}}" selected hidden>{{.Collection.Category.Name}}</option>
                 </select>
             </div>
             <div>
