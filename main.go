@@ -28,24 +28,18 @@ func getSystemInfo() {
 		log.Fatalf("failed to open file: %s", err)
 	}
 	defer file.Close()
-
-	// Create a new scanner to read the file line by line
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		VERSION = scanner.Text() // Get the line as a string
+		VERSION = scanner.Text()
 	}
-
-	// Check for errors during the scan
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("error reading file: %s", err)
 	}
-
 	info.GetSysInfo()
 	HOSTNAME = info.Node.Hostname
 	OS = info.OS.Name
 	ARCH = info.Kernel.Architecture
 	TZONE = info.Node.Timezone
-
 	_, err = db.Exec(`INSERT OR IGNORE INTO info (HOSTNAME) VALUES (?)`, HOSTNAME)
 	if err != nil {
 		log.Fatal(err)
@@ -63,6 +57,7 @@ func getStockData() {
 		('BlueRay'),
 		('DVD'),
 		('Manga'),
+		('Comic'),
 		('Book');`)
 	if err != nil {
 		log.Fatal(err)
@@ -71,6 +66,7 @@ func getStockData() {
 		VALUES
 		('Movie'),
 		('TV-Series'),
+		('Music'),
 		('Literature');`)
 	if err != nil {
 		log.Fatal(err)
@@ -81,6 +77,7 @@ func getStockData() {
 		('Romance'),
 		('Action'),
 		('Science Fiction'),
+		('Musical'),
 		('Horror');`)
 	if err != nil {
 		log.Fatal(err)
@@ -121,7 +118,6 @@ func initDB() {
 		TITLE TEXT NOT NULL,
 		YEAR INTEGER NOT NULL,
 		PLOT TEXT NOT NULL,
-		MEDIUM TEXT NOT NULL,
 		IS_DIGITAL BOOL NOT NULL DEFAULT 0,
 		collectionID INTEGER DEFAULT NULL,
 		GenreID INT DEFAULT NULL,
@@ -162,7 +158,6 @@ func initDB() {
 		log.Fatal(err)
 	}
 }
-
 func List(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		collections := collect.ListCollections(db)
@@ -173,7 +168,6 @@ func List(db *sql.DB) gin.HandlerFunc {
 		})
 	}
 }
-
 func main() {
 	initDB()
 	getSystemInfo()
