@@ -9,6 +9,14 @@ type Mediatypes struct {
 	ID   int    `json:"typeid"`
 	Name string `json:"name"`
 }
+type Categories struct {
+	ID   int    `json:"typeid"`
+	Name string `json:"name"`
+}
+type Genres struct {
+	ID   int    `json:"genreid"`
+	Name string `json:"name"`
+}
 
 func ListMediatypes(db *sql.DB) (mediatypes []Mediatypes) {
 	rows, err := db.Query("SELECT * FROM mediatypes")
@@ -23,12 +31,6 @@ func ListMediatypes(db *sql.DB) (mediatypes []Mediatypes) {
 	}
 	return
 }
-
-type Categories struct {
-	ID   int    `json:"typeid"`
-	Name string `json:"name"`
-}
-
 func ListCategories(db *sql.DB) (categories []Categories) {
 	rows, err := db.Query("SELECT * FROM categories")
 	if err != nil {
@@ -43,12 +45,6 @@ func ListCategories(db *sql.DB) (categories []Categories) {
 	}
 	return
 }
-
-type Genres struct {
-	ID   int    `json:"genreid"`
-	Name string `json:"name"`
-}
-
 func ListGenres(db *sql.DB) (genres []Genres) {
 	rows, err := db.Query("SELECT * FROM genres")
 	if err != nil {

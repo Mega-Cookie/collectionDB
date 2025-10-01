@@ -2,6 +2,7 @@ package entries
 
 import (
 	"collectionDB/collect"
+	"collectionDB/small"
 	"collectionDB/stockdata"
 	"database/sql"
 	"fmt"
@@ -91,6 +92,8 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		entry.CreatedAt = small.SetTime(db, &entry.CreatedAt)
+		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
 		c.HTML(http.StatusOK, "entries/edit.html", gin.H{
 			"Entry":       entry,
 			"Collections": collections,
@@ -130,6 +133,9 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		entry.CreatedAt = small.SetTime(db, &entry.CreatedAt)
+		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
+
 		c.HTML(http.StatusOK, "entries/view.html", entry)
 	}
 }

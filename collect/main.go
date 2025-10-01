@@ -1,6 +1,7 @@
 package collect
 
 import (
+	"collectionDB/small"
 	"collectionDB/stockdata"
 	"database/sql"
 	"fmt"
@@ -71,6 +72,8 @@ func ShowEditCollectionPage(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		collection.CreatedAt = small.SetTime(db, &collection.CreatedAt)
+		collection.EditedAt = small.SetTime(db, &collection.EditedAt)
 		c.HTML(http.StatusOK, "collections/edit.html", gin.H{
 			"Collection": collection,
 			"Categories": categories,
@@ -104,6 +107,8 @@ func ViewCollection(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		collection.CreatedAt = small.SetTime(db, &collection.CreatedAt)
+		collection.EditedAt = small.SetTime(db, &collection.EditedAt)
 		c.HTML(http.StatusOK, "collections/view.html", collection)
 	}
 }
