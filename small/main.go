@@ -19,9 +19,13 @@ var ARCH string
 var TZONE string
 
 func SetSystemInfo(db *sql.DB) {
-	file, err := os.Open("VERSION")
+	file, err := os.Open("/etc/collectionDB/VERSION")
 	if err != nil {
-		log.Fatalf("failed to open file: %s", err)
+		fmt.Println("No VERSION file in /etc/collectionDB/ assuming VERSION file in root directory")
+		file, err = os.Open("VERSION")
+		if err != nil {
+			log.Fatalf("failed to open file: %s", err)
+		}
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)

@@ -1,0 +1,9 @@
+[Unit]
+Description=A simple webapp for managing your collections of physical media written in Go with SQLite.
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/collectionDB
+
+[Install]
+WantedBy=multi-user.target
