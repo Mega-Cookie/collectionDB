@@ -22,7 +22,7 @@ var OS string
 var ARCH string
 var TZONE string
 
-func getSystemInfo() {
+func setSystemInfo() {
 	file, err := os.Open("VERSION")
 	if err != nil {
 		log.Fatalf("failed to open file: %s", err)
@@ -49,7 +49,7 @@ func getSystemInfo() {
 		log.Fatal(err)
 	}
 }
-func getStockData() {
+func setStockData() {
 	var err error
 	_, err = db.Exec(`INSERT OR IGNORE INTO mediatypes (NAME)
 		VALUES
@@ -158,7 +158,7 @@ func initDB() {
 		log.Fatal(err)
 	}
 }
-func List(db *sql.DB) gin.HandlerFunc {
+func getList(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		collections := collect.ListCollections(db)
 		entries := entries.ListEntries(db)
@@ -170,12 +170,12 @@ func List(db *sql.DB) gin.HandlerFunc {
 }
 func main() {
 	initDB()
-	getSystemInfo()
-	getStockData()
+	setSystemInfo()
+	setStockData()
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.LoadHTMLGlob("templates/**/*.html")
-	router.GET("/", List(db))
+	router.GET("/", getList(db))
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
 	router.GET("/entries/:id/edit", entries.ShowEditEntryPage(db))
