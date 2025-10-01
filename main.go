@@ -142,7 +142,7 @@ func main() {
 	small.SetSystemInfo(db)
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"})
-	router.LoadHTMLGlob("templates/**/*.html")
+	router.LoadHTMLGlob("/etc/collectionDB/templates/**/*.html")
 	router.GET("/", ShowList(db))
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
