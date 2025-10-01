@@ -11,14 +11,14 @@ import (
 	"github.com/zcalusic/sysinfo"
 )
 
-func SetSystemInfo() {
-	var db *sql.DB
-	var VERSION string
-	var HOSTNAME string
-	var info sysinfo.SysInfo
-	var OS string
-	var ARCH string
-	var TZONE string
+var VERSION string
+var HOSTNAME string
+var info sysinfo.SysInfo
+var OS string
+var ARCH string
+var TZONE string
+
+func SetSystemInfo(db *sql.DB) {
 	file, err := os.Open("VERSION")
 	if err != nil {
 		log.Fatalf("failed to open file: %s", err)

@@ -135,8 +135,8 @@ func ShowList(db *sql.DB) gin.HandlerFunc {
 }
 func main() {
 	initDB()
-	small.SetSystemInfo()
 	setStockData()
+	small.SetSystemInfo(db)
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.LoadHTMLGlob("templates/**/*.html")
