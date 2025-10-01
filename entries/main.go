@@ -52,7 +52,7 @@ func ShowCreateEntryPage(db *sql.DB) gin.HandlerFunc {
 		Collections := collect.ListCollections(db)
 		Types := stockdata.ListMediatypes(db)
 		Genres := stockdata.ListGenres(db)
-		c.HTML(http.StatusOK, "create_entry.html", gin.H{
+		c.HTML(http.StatusOK, "entries/create.html", gin.H{
 			"Collections": Collections,
 			"Types":       Types,
 			"Genres":      Genres,
@@ -91,7 +91,7 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-		c.HTML(http.StatusOK, "edit_entry.html", gin.H{
+		c.HTML(http.StatusOK, "entries/edit.html", gin.H{
 			"Entry":       entry,
 			"Collections": collections,
 			"Genres":      genres,
@@ -130,7 +130,7 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-		c.HTML(http.StatusOK, "view_entry.html", entry)
+		c.HTML(http.StatusOK, "entries/view.html", entry)
 	}
 }
 func DeleteEntry(db *sql.DB) gin.HandlerFunc {

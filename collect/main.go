@@ -40,7 +40,7 @@ func ListCollections(db *sql.DB) (collections []Collection) {
 func ShowCreateCollectionPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		categories := stockdata.ListCategories(db)
-		c.HTML(http.StatusOK, "create_collection.html", gin.H{
+		c.HTML(http.StatusOK, "collections/create.html", gin.H{
 			"Categories": categories,
 		})
 	}
@@ -71,7 +71,7 @@ func ShowEditCollectionPage(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-		c.HTML(http.StatusOK, "edit_collection.html", gin.H{
+		c.HTML(http.StatusOK, "collections/edit.html", gin.H{
 			"Collection": collection,
 			"Categories": categories,
 		})
@@ -104,7 +104,7 @@ func ViewCollection(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-		c.HTML(http.StatusOK, "view_collection.html", collection)
+		c.HTML(http.StatusOK, "collections/view.html", collection)
 	}
 }
 func DeleteCollection(db *sql.DB) gin.HandlerFunc {

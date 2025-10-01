@@ -174,7 +174,7 @@ func main() {
 	getStockData()
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"})
-	router.LoadHTMLGlob("templates/*")
+	router.LoadHTMLGlob("templates/**/*.html")
 	router.GET("/", List(db))
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))

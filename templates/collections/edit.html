@@ -1,3 +1,4 @@
+{{define "collections/edit.html"}}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -28,7 +29,7 @@
               <label for="catid" class="text-lg mr-2">Category:</label>
                 <select id="catid" name="catid" class="mr-2" required>
                   {{range .Categories}}
-                  <option value="{{.CatID}}">{{.Name}}</option>
+                  <option value="{{.ID}}">{{.Name}}</option>
                   {{end}}
                   <option value="{{.Collection.Category.ID}}" selected hidden>{{.Collection.Category.Name}}</option>
                 </select>
@@ -42,3 +43,4 @@
     </div>
   </body>
 </html>
+{{end}}
