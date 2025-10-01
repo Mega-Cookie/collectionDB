@@ -33,6 +33,26 @@ type Entry struct {
 	EditedAt  time.Time `json:"edited_at"`
 }
 
+func setTime(db *sql.DB, stamp *time.Time) (newstamp time.Time) {
+	var location *time.Location
+	var zone string
+	query := "SELECT TIMEZONE FROM info WHERE instanceID = 1"
+	err := db.QueryRow(query).Scan(&zone)
+	if err != nil {
+		fmt.Println("error: Failed to get timezone")
+		fmt.Println(err)
+		return
+	}
+	location, err = time.LoadLocation(zone)
+	if err != nil {
+		fmt.Println("error: Failed to set timezone")
+		fmt.Println(err)
+		return
+	}
+	newstamp = stamp.In(location)
+	return
+}
+
 func ListEntries(db *sql.DB) (entries []Entry) {
 	rows, err := db.Query("SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.typeID = t.typeID GROUP BY e.entryID")
 	if err != nil {
@@ -91,6 +111,8 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		entry.CreatedAt = setTime(db, &entry.CreatedAt)
+		entry.EditedAt = setTime(db, &entry.EditedAt)
 		c.HTML(http.StatusOK, "entries/edit.html", gin.H{
 			"Entry":       entry,
 			"Collections": collections,
@@ -130,6 +152,9 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		entry.CreatedAt = setTime(db, &entry.CreatedAt)
+		entry.EditedAt = setTime(db, &entry.EditedAt)
+
 		c.HTML(http.StatusOK, "entries/view.html", entry)
 	}
 }

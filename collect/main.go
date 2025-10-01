@@ -23,6 +23,25 @@ type Collection struct {
 	EditedAt  time.Time `json:"edited_at"`
 }
 
+func setTime(db *sql.DB, stamp *time.Time) (newstamp time.Time) {
+	var location *time.Location
+	var zone string
+	query := "SELECT TIMEZONE FROM info WHERE instanceID = 1"
+	err := db.QueryRow(query).Scan(&zone)
+	if err != nil {
+		fmt.Println("error: Failed to get timezone")
+		fmt.Println(err)
+		return
+	}
+	location, err = time.LoadLocation(zone)
+	if err != nil {
+		fmt.Println("error: Failed to set timezone")
+		fmt.Println(err)
+		return
+	}
+	newstamp = stamp.In(location)
+	return
+}
 func ListCollections(db *sql.DB) (collections []Collection) {
 	rows, err := db.Query("SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID GROUP BY c.collectionID")
 	if err != nil {
@@ -104,6 +123,8 @@ func ViewCollection(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		collection.CreatedAt = setTime(db, &collection.CreatedAt)
+		collection.EditedAt = setTime(db, &collection.EditedAt)
 		c.HTML(http.StatusOK, "collections/view.html", collection)
 	}
 }
