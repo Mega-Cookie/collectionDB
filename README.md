@@ -1,5 +1,5 @@
 # collectionDB
-WebApp for managing collections of physical media written in Go
+WebApp for managing your collections of physical media written in Go.
 
 ## Usage
 
