@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
@@ -50,7 +51,8 @@ func setStockData() {
 }
 func initDB() {
 	var err error
-	db, err = sql.Open("sqlite3", "./collections.db")
+	database, _ := filepath.Abs("/var/lib/collectionDB/collections.db")
+	db, err = sql.Open("sqlite3", database)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,6 +64,7 @@ func initDB() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	createTableQuery = `CREATE TABLE IF NOT EXISTS genres (
 		genreID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE
