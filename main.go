@@ -1,54 +1,19 @@
 package main
 
 import (
-	"bufio"
 	"collectionDB/collect"
 	"collectionDB/entries"
+	"collectionDB/small"
 	"database/sql"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/zcalusic/sysinfo"
 )
 
 var db *sql.DB
-var VERSION string
-var HOSTNAME string
-var info sysinfo.SysInfo
-var OS string
-var ARCH string
-var TZONE string
 
-func setSystemInfo() {
-	file, err := os.Open("VERSION")
-	if err != nil {
-		log.Fatalf("failed to open file: %s", err)
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		VERSION = scanner.Text()
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatalf("error reading file: %s", err)
-	}
-	info.GetSysInfo()
-	HOSTNAME = info.Node.Hostname
-	OS = info.OS.Name
-	ARCH = info.Kernel.Architecture
-	TZONE = info.Node.Timezone
-	_, err = db.Exec(`INSERT OR IGNORE INTO info (HOSTNAME) VALUES (?)`, HOSTNAME)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = db.Exec(`UPDATE info SET VERSION = ?, OS = ?, ARCH = ?, TIMEZONE = ?`, VERSION, OS, ARCH, TZONE)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 func setStockData() {
 	var err error
 	_, err = db.Exec(`INSERT OR IGNORE INTO mediatypes (NAME)
@@ -158,7 +123,7 @@ func initDB() {
 		log.Fatal(err)
 	}
 }
-func getList(db *sql.DB) gin.HandlerFunc {
+func ShowList(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		collections := collect.ListCollections(db)
 		entries := entries.ListEntries(db)
@@ -170,12 +135,12 @@ func getList(db *sql.DB) gin.HandlerFunc {
 }
 func main() {
 	initDB()
-	setSystemInfo()
+	small.SetSystemInfo()
 	setStockData()
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.LoadHTMLGlob("templates/**/*.html")
-	router.GET("/", getList(db))
+	router.GET("/", ShowList(db))
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
 	router.GET("/entries/:id/edit", entries.ShowEditEntryPage(db))

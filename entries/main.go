@@ -2,6 +2,7 @@ package entries
 
 import (
 	"collectionDB/collect"
+	"collectionDB/small"
 	"collectionDB/stockdata"
 	"database/sql"
 	"fmt"
@@ -31,26 +32,6 @@ type Entry struct {
 	IsDigital bool      `json:"is_digital"`
 	CreatedAt time.Time `json:"created_at"`
 	EditedAt  time.Time `json:"edited_at"`
-}
-
-func setTime(db *sql.DB, stamp *time.Time) (newstamp time.Time) {
-	var location *time.Location
-	var zone string
-	query := "SELECT TIMEZONE FROM info WHERE instanceID = 1"
-	err := db.QueryRow(query).Scan(&zone)
-	if err != nil {
-		fmt.Println("error: Failed to get timezone")
-		fmt.Println(err)
-		return
-	}
-	location, err = time.LoadLocation(zone)
-	if err != nil {
-		fmt.Println("error: Failed to set timezone")
-		fmt.Println(err)
-		return
-	}
-	newstamp = stamp.In(location)
-	return
 }
 
 func ListEntries(db *sql.DB) (entries []Entry) {
@@ -111,8 +92,8 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-		entry.CreatedAt = setTime(db, &entry.CreatedAt)
-		entry.EditedAt = setTime(db, &entry.EditedAt)
+		entry.CreatedAt = small.SetTime(db, &entry.CreatedAt)
+		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
 		c.HTML(http.StatusOK, "entries/edit.html", gin.H{
 			"Entry":       entry,
 			"Collections": collections,
@@ -152,8 +133,8 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-		entry.CreatedAt = setTime(db, &entry.CreatedAt)
-		entry.EditedAt = setTime(db, &entry.EditedAt)
+		entry.CreatedAt = small.SetTime(db, &entry.CreatedAt)
+		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
 
 		c.HTML(http.StatusOK, "entries/view.html", entry)
 	}
