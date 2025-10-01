@@ -18,23 +18,24 @@
     {{else}}
       <a href="/create_entry" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800">Create New Entry</a>
     {{end}}
- 
     {{if not .Collections}}
+    <div class="mx-auto p-4 flex">
       <a class="text-gray-600">You haven't created any collections yet.</a>
+    </div>
     {{else}}
-    <div class="mx-auto p-4 grid grid-cols-2 gap-2 flex">
+    <div class="mx-auto p-4 grid auto-cols-[minmax(0,2fr)] gap-2 flex">
           {{range .Collections}}
           <div class="bg-white p-4 border-2 border-gray-300 rounded-xl">
             <div class="flex items-center">
-              <a class="text-xl font-semibold mr-2">{{.Name}}</a>
+              <a class="text-xl font-semibold mr-2" href="/collections/{{.ID}}">{{.Name}}</a>
               <span class="ml-auto text-xs bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Category.Name}}</span>
               <span class="ml-1 text-xs bg-green-200 text-green-800 py-2 px-2 rounded-xl">Entries: {{.Entrycount}}</span>
               </div>
             <p class="pb-12 text-sm text-gray-500">{{.Description}}</p>
             <div class="mt-2 flex">
-              <a class="ml-auto text-xs bg-gray-200 text-gray-800 py-2 px-2 rounded-md mr-2 border-2 border-gray-800" href="/collections/{{.CollID}}/edit">Edit</a>
+              <a class="ml-auto text-xs bg-gray-200 text-gray-800 py-2 px-2 rounded-md mr-2 border-2 border-gray-800" href="/collections/{{.ID}}/edit">Edit</a>
               <div>
-              <form action="/collections/{{.CollID}}/delete" method="POST">
+              <form action="/collections/{{.ID}}/delete" method="POST">
               <button class="ml-auto text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md ml-2 border-2 border-orange-800" type="submit">Delete</button>
               </form>
               </div>
@@ -43,15 +44,16 @@
           {{end}}
           </div>
       {{end}}
-
     {{if not .Entries}}
+    <div class="mx-auto p-4 flex">
       <a class="text-gray-600">You haven't created any entries yet.</a>
+        </div>
     {{else}}
-    <div class="mx-auto p-4 grid grid-cols-2 gap-2 flex">
+    <div class="mx-auto p-4 grid auto-cols-[minmax(0,2fr)] gap-2 flex">
           {{range .Entries}}
-          <div class="bg-white p-4 border-2 border-gray-300 rounded-xl">
+          <div class="bg-white p-4 border-2 border-gray-300 rounded-xl items-center">
             <div class="flex items-center">
-              <a class="text-xl font-semibold mr-2">{{.Title}}</a>
+              <a class="text-xl font-semibold mr-2" href="/entries/{{.ID}}">{{.Title}}</a>
               {{if .IsDigital}}
                 <span class="ml-auto text-xs bg-green-200 text-green-800 py-2 px-2 rounded-xl">Digital</span>
               {{else}}

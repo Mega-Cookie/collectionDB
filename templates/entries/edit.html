@@ -1,3 +1,4 @@
+{{define "entries/edit.html"}}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -31,7 +32,7 @@
             <label for="type" class="text-lg mr-2">Type of physical media:</label>
             <select id="typeid" name="typeid" class="mr-2">
             {{range .Mediatypes}}
-              <option value="{{.TypeID}}">{{.Name}}</option>
+              <option value="{{.ID}}">{{.Name}}</option>
             {{end}}
               <option value="{{.Entry.Type.ID}}" selected hidden>{{.Entry.Type.Name}}</option>
             </select>
@@ -40,7 +41,7 @@
           <label for="collid" class="text-lg mr-2">Collection:</label>
           <select id="collid" name="collid" class="mr-2">
           {{range .Collections}}
-          <option value="{{.CollID}}">{{.Name}}</option>
+          <option value="{{.ID}}">{{.Name}}</option>
           {{end}}
           <option value="{{.Entry.Collection.ID}}" selected hidden>{{.Entry.Collection.Name}}</option>
           </select>
@@ -49,7 +50,7 @@
             <label for="type" class="text-lg mr-2">Genre:</label>
               <select id="genreid" name="genreid" class="mr-2" required>
                 {{range .Genres}}
-                  <option value="{{.GenreID}}">{{.Name}}</option>
+                  <option value="{{.ID}}">{{.Name}}</option>
                 {{end}}
                   <option value="{{.Entry.Genre.Name}}" selected hidden>{{.Entry.Genre.Name}}</option>
                 </select>
@@ -71,3 +72,4 @@
     </div>
   </body>
 </html>
+{{end}}

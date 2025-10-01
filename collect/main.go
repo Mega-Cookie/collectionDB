@@ -11,7 +11,7 @@ import (
 )
 
 type Collection struct {
-	CollID      int    `json:"id"`
+	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Entrycount  int    `json:"entrycount"`
@@ -24,14 +24,15 @@ type Collection struct {
 }
 
 func ListCollections(db *sql.DB) (collections []Collection) {
-	rows, err := db.Query("SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.CategoryID = c.CategoryID LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID GROUP BY c.collectionID")
+	rows, err := db.Query("SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID GROUP BY c.collectionID")
 	if err != nil {
 		fmt.Println("error: Failed to retrieve collections")
+		fmt.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var collection Collection
-		rows.Scan(&collection.CollID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Entrycount, &collection.Category.Name)
+		rows.Scan(&collection.ID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Entrycount, &collection.Category.Name)
 		collections = append(collections, collection)
 	}
 	return
@@ -39,7 +40,7 @@ func ListCollections(db *sql.DB) (collections []Collection) {
 func ShowCreateCollectionPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		categories := stockdata.ListCategories(db)
-		c.HTML(http.StatusOK, "create_collection.html", gin.H{
+		c.HTML(http.StatusOK, "collections/create.html", gin.H{
 			"Categories": categories,
 		})
 	}
@@ -49,9 +50,10 @@ func CreateCollection(db *sql.DB) gin.HandlerFunc {
 		Name := c.PostForm("name")
 		CatID := c.PostForm("catid")
 		Description := c.PostForm("description")
-		_, err := db.Exec(`INSERT INTO collections (NAME, CategoryID, DESCRIPTION) VALUES (?, ?, ?)`, Name, CatID, Description)
+		_, err := db.Exec(`INSERT INTO collections (NAME, categoryID, DESCRIPTION) VALUES (?, ?, ?)`, Name, CatID, Description)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create collection!"})
+			fmt.Println(err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/")
@@ -62,14 +64,14 @@ func ShowEditCollectionPage(db *sql.DB) gin.HandlerFunc {
 		categories := stockdata.ListCategories(db)
 		id := c.Param("id")
 		var collection Collection
-		query := "SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.CategoryID = c.CategoryID LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID WHERE c.collectionID = ?"
-		err := db.QueryRow(query, id).Scan(&collection.CollID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Entrycount, &collection.Category.Name)
+		query := "SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID WHERE c.collectionID = ?"
+		err := db.QueryRow(query, id).Scan(&collection.ID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Entrycount, &collection.Category.Name)
 		if err != nil {
 			c.HTML(http.StatusNotFound, "404.html", nil)
 			fmt.Println(err)
 			return
 		}
-		c.HTML(http.StatusOK, "edit_collection.html", gin.H{
+		c.HTML(http.StatusOK, "collections/edit.html", gin.H{
 			"Collection": collection,
 			"Categories": categories,
 		})
@@ -81,13 +83,28 @@ func EditCollection(db *sql.DB) gin.HandlerFunc {
 		CatID := c.PostForm("catid")
 		Description := c.PostForm("description")
 		id := c.Param("id")
-		updateTableQuery := `UPDATE collections SET NAME = ?, CategoryID = ?, Description = ?, EDITED_AT = CURRENT_TIMESTAMP where collectionID = ?`
+		updateTableQuery := `UPDATE collections SET NAME = ?, categoryID = ?, DESCRIPTION = ?, EDITED_AT = CURRENT_TIMESTAMP where collectionID = ?`
 		_, err := db.Exec(updateTableQuery, Name, CatID, Description, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit entry"})
+			fmt.Println(err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/")
+	}
+}
+func ViewCollection(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		var collection Collection
+		query := "SELECT c.*, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID WHERE c.collectionID = ?"
+		err := db.QueryRow(query, id).Scan(&collection.ID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Category.Name)
+		if err != nil {
+			c.HTML(http.StatusNotFound, "404.html", nil)
+			fmt.Println(err)
+			return
+		}
+		c.HTML(http.StatusOK, "collections/view.html", collection)
 	}
 }
 func DeleteCollection(db *sql.DB) gin.HandlerFunc {
@@ -96,6 +113,7 @@ func DeleteCollection(db *sql.DB) gin.HandlerFunc {
 		_, err := db.Exec(`DELETE FROM collections WHERE collectionID = ?`, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete collection!"})
+			fmt.Println(err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/")
