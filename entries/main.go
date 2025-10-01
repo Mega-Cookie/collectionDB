@@ -37,6 +37,7 @@ func ListEntries(db *sql.DB) (entries []Entry) {
 	rows, err := db.Query("SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.typeID = t.typeID GROUP BY e.entryID")
 	if err != nil {
 		fmt.Println("error: Failed to retrieve entries")
+		fmt.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -70,6 +71,7 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, typeID, collectionID,genreID, IS_DIGITAL) VALUES (?, ?, ?, ?, ?, ?, ?)`, Title, Year, Plot, Typeid, Collid, Genreid, IsDigital)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
+			fmt.Println(err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/")
@@ -111,6 +113,7 @@ func EditEntry(db *sql.DB) gin.HandlerFunc {
 		_, err := db.Exec(updateTableQuery, Title, Year, Plot, Typeid, Genreid, IsDigital, Collid, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit entry"})
+			fmt.Println(err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/")
@@ -136,6 +139,7 @@ func DeleteEntry(db *sql.DB) gin.HandlerFunc {
 		_, err := db.Exec(`DELETE FROM entries WHERE entryID = ?`, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete entry"})
+			fmt.Println(err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/")

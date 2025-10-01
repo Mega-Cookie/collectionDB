@@ -27,6 +27,7 @@ func ListCollections(db *sql.DB) (collections []Collection) {
 	rows, err := db.Query("SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID GROUP BY c.collectionID")
 	if err != nil {
 		fmt.Println("error: Failed to retrieve collections")
+		fmt.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -52,6 +53,7 @@ func CreateCollection(db *sql.DB) gin.HandlerFunc {
 		_, err := db.Exec(`INSERT INTO collections (NAME, categoryID, DESCRIPTION) VALUES (?, ?, ?)`, Name, CatID, Description)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create collection!"})
+			fmt.Println(err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/")
@@ -85,6 +87,7 @@ func EditCollection(db *sql.DB) gin.HandlerFunc {
 		_, err := db.Exec(updateTableQuery, Name, CatID, Description, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit entry"})
+			fmt.Println(err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/")
@@ -98,6 +101,7 @@ func ViewCollection(db *sql.DB) gin.HandlerFunc {
 		err := db.QueryRow(query, id).Scan(&collection.ID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Category.Name)
 		if err != nil {
 			c.HTML(http.StatusNotFound, "404.html", nil)
+			fmt.Println(err)
 			return
 		}
 		c.HTML(http.StatusOK, "view_collection.html", collection)
@@ -109,6 +113,7 @@ func DeleteCollection(db *sql.DB) gin.HandlerFunc {
 		_, err := db.Exec(`DELETE FROM collections WHERE collectionID = ?`, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete collection!"})
+			fmt.Println(err)
 			return
 		}
 		c.Redirect(http.StatusFound, "/")

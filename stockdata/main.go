@@ -33,6 +33,7 @@ func ListCategories(db *sql.DB) (categories []Categories) {
 	rows, err := db.Query("SELECT * FROM categories")
 	if err != nil {
 		fmt.Println("error: Failed to retrieve categories")
+		fmt.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -52,6 +53,7 @@ func ListGenres(db *sql.DB) (genres []Genres) {
 	rows, err := db.Query("SELECT * FROM genres")
 	if err != nil {
 		fmt.Println("error: Failed to retrieve genres")
+		fmt.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
