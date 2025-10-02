@@ -9,21 +9,25 @@
   </head>
   <body>
     <div class="max-w-4xl mx-auto p-4">
-      <form action="/create_entry" method="POST" class="bg-white p-6">
+      <form action="/create_entry" method="POST">
         <div class="flex justify-between items-center mb-4 pb-4 border-b">
-          <div class="flex items-center">
-            <div class="mb-4">
-              <input type="text" id="title" name="title" placeholder="Title" required
-              class="w-full p-2 text-4xl font-bold focus:outline-none">
-            </div>
+          <div>
+              <input class="w-full text-4xl font-bold" type="text" id="title" name="title" placeholder="Title" required>
           </div>
           <div>
-            <button type="submit" class="text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800">
-            Create Entry
+            <button type="submit">
+            <a class="mr-1 text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">
+            Create
+            </a>
             </button>
-          </div>
-          <a href="/" class="text-lg bg-red-200 text-red-800 py-2 px-2 rounded-md border-2 border-red-800">Cancel</a>
+            <button>
+            <a href="/" class="ml-1 text-lg bg-red-200 text-red-800 py-2 px-2 rounded-md border-2 border-red-800 hover:bg-red-400">
+            Cancel
+            </a>
+            </button>
         </div>
+        </div>
+
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label for="year" class="text-lg mr-2">Year:</label>
@@ -31,7 +35,7 @@
               <div>
               <label for="mediatype" class="text-lg mr-2">Type of physical media:</label>
                 <select id="typeid" name="typeid" class="mr-2" required>
-                  {{range .Types}}
+                  {{range .Mediatypes}}
                   <option value="{{.ID}}">{{.Name}}</option>
                   {{end}}
                   <option value="0" selected hidden>--Choose Type--</option>
@@ -47,7 +51,7 @@
                 </select>
               </div>
               <div>
-              <label for="type" class="text-lg mr-2">Genre:</label>
+              <label for="genres" class="text-lg mr-2">Genre:</label>
                 <select id="genreid" name="genreid" class="mr-2" required>
                   {{range .Genres}}
                   <option value="{{.ID}}">{{.Name}}</option>
