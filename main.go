@@ -49,9 +49,9 @@ func setStockData() {
 		log.Fatal(err)
 	}
 }
-func initDB() {
+func initDB(databasefile string) {
 	var err error
-	database, _ := filepath.Abs("/var/lib/collectionDB/collections.db")
+	database, _ := filepath.Abs(databasefile)
 	db, err = sql.Open("sqlite3", database)
 	if err != nil {
 		log.Fatal(err)
@@ -137,12 +137,15 @@ func ShowList(db *sql.DB) gin.HandlerFunc {
 	}
 }
 func main() {
-	initDB()
+	config := small.Configure()
+	initDB(config.Database)
 	setStockData()
+	if !config.IsDebug {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	small.SetSystemInfo(db)
 	router := gin.Default()
-	router.SetTrustedProxies([]string{"127.0.0.1"})
-	router.LoadHTMLGlob("/etc/collectionDB/templates/**/*.html")
+	router.LoadHTMLGlob(config.Templates)
 	router.GET("/", ShowList(db))
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
@@ -156,9 +159,9 @@ func main() {
 	router.POST("/collections/:id/edit", collect.EditCollection(db))
 	router.POST("/collections/:id/delete", collect.DeleteCollection(db))
 	router.GET("/collections/:id", collect.ViewCollection(db))
-	port := ":8080"
-	log.Printf("Server is running on http://localhost%s", port)
-	if err := router.Run(port); err != nil {
+	log.Printf("Server is running on http://%s", config.Listen)
+	log.Printf("Acessing SQLite: %s", config.Database)
+	if err := router.Run(config.Listen); err != nil {
 		log.Fatalf("Error starting server: %s", err)
 	}
 }

@@ -3,6 +3,8 @@ package small
 import (
 	"bufio"
 	"database/sql"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -18,6 +20,34 @@ var OS string
 var ARCH string
 var TZONE string
 
+type config struct {
+	Listen    string `json:"listen"`
+	Database  string `json:"database"`
+	Templates string `json:"templates"`
+	IsDebug   bool   `json:"debug"`
+}
+
+func Configure() (config config) {
+	filename := flag.String("config", "config.yml", "")
+	flag.Parse()
+	data, err := os.ReadFile(*filename)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	jconf, err := json.MarshalIndent(config, "", "\t")
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	log.Printf(": Reading config file: %s\n%s", *filename, string(jconf))
+	return
+}
 func SetSystemInfo(db *sql.DB) {
 	file, err := os.Open("/etc/collectionDB/VERSION")
 	if err != nil {
