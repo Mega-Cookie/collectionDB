@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/zcalusic/sysinfo"
@@ -19,6 +20,7 @@ var info sysinfo.SysInfo
 var OS string
 var ARCH string
 var TZONE string
+var GOVERSION string
 
 type config struct {
 	Listen    string `json:"listen"`
@@ -70,11 +72,12 @@ func SetSystemInfo(db *sql.DB) {
 	OS = info.OS.Name
 	ARCH = info.Kernel.Architecture
 	TZONE = info.Node.Timezone
+	GOVERSION = runtime.Version()
 	_, err = db.Exec(`INSERT OR IGNORE INTO info (HOSTNAME) VALUES (?)`, HOSTNAME)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = db.Exec(`UPDATE info SET VERSION = ?, OS = ?, ARCH = ?, TIMEZONE = ?`, VERSION, OS, ARCH, TZONE)
+	_, err = db.Exec(`UPDATE info SET VERSION = ?, OS = ?, ARCH = ?, GOVERSION = ?, TIMEZONE = ?`, VERSION, OS, ARCH, GOVERSION, TZONE)
 	if err != nil {
 		log.Fatal(err)
 	}
