@@ -116,10 +116,11 @@ func initDB(databasefile string) {
 	createTableQuery = `CREATE TABLE IF NOT EXISTS info (
 		instanceID INTEGER PRIMARY KEY,
 		VERSION STRING,
-		HOSTNAME TEXT UNIQUE,
-		OS TEXT,
-		ARCH TEXT,
-		TIMEZONE TEXT
+		HOSTNAME STRING UNIQUE,
+		OS STRING,
+		ARCH STRING,
+		GOVERSION STRING,
+		TIMEZONE STRING
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
