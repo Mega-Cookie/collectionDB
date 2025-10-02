@@ -6,7 +6,6 @@ Type=simple
 ExecStart=/usr/bin/collectionDB -config /etc/collectionDB/config.yml
 
 StandardOutput=append:/var/log/collectionDB/default.log
-StandardError=append:/var/log/collectionDB/error.log
-
+StandardError=append:/var/log/collectionDB.log
 [Install]
 WantedBy=multi-user.target
