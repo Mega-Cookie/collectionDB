@@ -30,7 +30,6 @@ install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
 install -Dpm 644 %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name}/
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}/templates/
-mkdir -p %{buildroot}%{_var}/log/%{name}
 cp -a templates/* %{buildroot}%{_sysconfdir}/%{name}/templates/
 
 %post
@@ -42,7 +41,6 @@ cp -a templates/* %{buildroot}%{_sysconfdir}/%{name}/templates/
 %files
 %dir %{_sharedstatedir}/%{name}
 %dir %{_sysconfdir}/%{name}
-%dir %{_var}/log/%{name}
 %{_sysconfdir}/%{name}/VERSION
 %{_sysconfdir}/%{name}/config.yml
 %{_bindir}/%{name}
