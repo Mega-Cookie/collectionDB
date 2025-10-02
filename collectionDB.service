@@ -3,7 +3,7 @@ Description=A simple webapp for managing your collections of physical media writ
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/collectionDB
+ExecStart=/usr/bin/collectionDB -config /etc/collectionDB/config.yml
 
 [Install]
 WantedBy=multi-user.target

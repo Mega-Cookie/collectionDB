@@ -25,6 +25,7 @@ go build -v -o %{name}
 
 %install
 install -Dpm 0755 VERSION %{buildroot}%{_sysconfdir}/%{name}/VERSION
+install -Dpm 0755 config.yml %{buildroot}%{_sysconfdir}/%{name}/config.yml
 install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
 install -Dpm 644 %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name}/
@@ -41,6 +42,7 @@ cp -a templates/* %{buildroot}%{_sysconfdir}/%{name}/templates/
 %dir %{_sharedstatedir}/%{name}
 %dir %{_sysconfdir}/%{name}
 %{_sysconfdir}/%{name}/VERSION
+%{_sysconfdir}/%{name}/config.yml
 %{_bindir}/%{name}
 %{_unitdir}/%{name}.service
 %{_sysconfdir}/%{name}/templates/*
