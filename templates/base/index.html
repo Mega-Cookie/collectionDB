@@ -8,72 +8,72 @@
   </head>
   <body>
     <div class="mx-auto p-4 grid grid-cols-2 gap-2 flex">
-    {{if not .Collections}}
-      <a href="/create_collection" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800">Create First Collection</a>
-    {{else}}
-      <a href="/create_collection" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800">Create New Collection</a>
-    {{end}}
-    {{if not .Entries}}
-      <a href="/create_entry" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800">Create First Entry</a>
-    {{else}}
-      <a href="/create_entry" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800">Create New Entry</a>
-    {{end}}
-    {{if not .Collections}}
-    <div class="mx-auto p-4 flex">
-      <a class="text-gray-600">You haven't created any collections yet.</a>
-    </div>
-    {{else}}
-    <div class="mx-auto p-4 grid auto-cols-[minmax(0,2fr)] gap-2 flex">
-          {{range .Collections}}
-          <div class="bg-white p-4 border-2 border-gray-300 rounded-xl">
-            <div class="flex items-center">
-              <a class="text-xl font-semibold mr-2" href="/collections/{{.ID}}">{{.Name}}</a>
-              <span class="ml-auto text-xs bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Category.Name}}</span>
-              <span class="ml-1 text-xs bg-green-200 text-green-800 py-2 px-2 rounded-xl">Entries: {{.Entrycount}}</span>
-              </div>
-            <p class="pb-12 text-sm text-gray-500">{{.Description}}</p>
-            <div class="mt-2 flex">
-              <a class="ml-auto text-xs bg-gray-200 text-gray-800 py-2 px-2 rounded-md mr-2 border-2 border-gray-800" href="/collections/{{.ID}}/edit">Edit</a>
-              <div>
-              <form action="/collections/{{.ID}}/delete" method="POST">
-              <button class="ml-auto text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md ml-2 border-2 border-orange-800" type="submit">Delete</button>
-              </form>
-              </div>
-            </div>
-          </div>
-          {{end}}
-          </div>
+      {{if not .Collections}}
+      <a href="/create_collection" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create First Collection</a>
+      {{else}}
+      <a href="/create_collection" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create New Collection</a>
       {{end}}
-    {{if not .Entries}}
-    <div class="mx-auto p-4 flex">
-      <a class="text-gray-600">You haven't created any entries yet.</a>
-        </div>
-    {{else}}
-    <div class="mx-auto p-4 grid auto-cols-[minmax(0,2fr)] gap-2 flex">
-          {{range .Entries}}
-          <div class="bg-white p-4 border-2 border-gray-300 rounded-xl items-center">
-            <div class="flex items-center">
-              <a class="text-xl font-semibold mr-2" href="/entries/{{.ID}}">{{.Title}}</a>
-              {{if .IsDigital}}
-                <span class="ml-auto text-xs bg-green-200 text-green-800 py-2 px-2 rounded-xl">Digital</span>
-              {{else}}
-                <span class="ml-auto text-xs bg-red-200 text-red-800 py-2 px-2 rounded-xl">Not Digital</span>
-              {{end}}
-              <span class="ml-2 text-xs bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Collection.Name}}</span>
-            </div>
-            <p class="pb-12 text-sm text-gray-500">{{.Plot}}</p>
-            <div class="mt-2 flex">
-              <a class="ml-auto text-xs bg-gray-200 text-gray-800 py-2 px-2 rounded-md mr-2 border-2 border-gray-800" href="/entries/{{.ID}}/edit">Edit</a>
-              <div>
-              <form action="/entries/{{.ID}}/delete" method="POST">
-              <button class="ml-auto text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md ml-2 border-2 border-orange-800" type="submit">Delete</button>
-              </form>
-              </div>
-            </div>
-          </div>
-          {{end}}
-          </div>
+      {{if not .Entries}}
+      <a href="/create_entry" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create First Entry</a>
+      {{else}}
+      <a href="/create_entry" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create New Entry</a>
       {{end}}
+      {{if not .Collections}}
+      <div class="mx-auto p-4 flex">
+        <a class="text-gray-600">You haven't created any collections yet.</a>
       </div>
+      {{else}}
+      <div class="mx-auto p-4 grid auto-cols-[minmax(0,2fr)] gap-2 flex">
+        {{range .Collections}}
+        <div class="bg-white p-4 border-2 border-gray-300 rounded-xl">
+          <div class="flex items-center">
+            <a class="text-xl font-semibold mr-2" href="/collections/{{.ID}}">{{.Name}}</a>
+            <span class="ml-auto text-xs bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Category.Name}}</span>
+            <span class="ml-1 text-xs bg-green-200 text-green-800 py-2 px-2 rounded-xl">Entries: {{.Entrycount}}</span>
+          </div>
+          <p class="pb-12 text-sm text-gray-500">{{.Description}}</p>
+          <div class="mt-2 flex">
+            <a class="ml-auto text-xs bg-gray-200 text-gray-800 py-2 px-2 rounded-md mr-2 border-2 border-gray-800 hover:bg-gray-400" href="/collections/{{.ID}}/edit">Edit</a>
+            <div>
+              <form action="/collections/{{.ID}}/delete" method="POST">
+                <button class="ml-auto text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md ml-2 border-2 border-orange-800 hover:bg-orange-400" type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {{end}}
+      </div>
+      {{end}}
+      {{if not .Entries}}
+      <div class="mx-auto p-4 flex">
+        <a class="text-gray-600">You haven't created any entries yet.</a>
+      </div>
+      {{else}}
+      <div class="mx-auto p-4 grid auto-cols-[minmax(0,2fr)] gap-2 flex">
+        {{range .Entries}}
+        <div class="bg-white p-4 border-2 border-gray-300 rounded-xl items-center">
+          <div class="flex items-center">
+            <a class="text-xl font-semibold mr-2" href="/entries/{{.ID}}">{{.Title}}</a>
+            {{if .IsDigital}}
+            <span class="ml-auto text-xs bg-green-200 text-green-800 py-2 px-2 rounded-xl">Digital</span>
+            {{else}}
+            <span class="ml-auto text-xs bg-red-200 text-red-800 py-2 px-2 rounded-xl">Not Digital</span>
+            {{end}}
+            <span class="ml-2 text-xs bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Collection.Name}}</span>
+          </div>
+          <p class="pb-12 text-sm text-gray-500">{{.Plot}}</p>
+          <div class="mt-2 flex">
+            <a class="ml-auto text-xs bg-gray-200 text-gray-800 py-2 px-2 rounded-md mr-2 border-2 border-gray-800 hover:bg-gray-400" href="/entries/{{.ID}}/edit">Edit</a>
+            <div>
+              <form action="/entries/{{.ID}}/delete" method="POST">
+                <button class="ml-auto text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md ml-2 border-2 border-orange-800 hover:bg-orange-400" type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {{end}}
+      </div>
+      {{end}}
+    </div>
   </body>
 </html>
