@@ -51,12 +51,12 @@ func ListEntries(db *sql.DB) (entries []Entry) {
 func ShowCreateEntryPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		Collections := collect.ListCollections(db)
-		Types := stockdata.ListMediatypes(db)
+		Mediatypes := stockdata.ListMediatypes(db)
 		Genres := stockdata.ListGenres(db)
 		c.HTML(http.StatusOK, "entries/create.html", gin.H{
 			"Collections": Collections,
-			"Types":       Types,
 			"Genres":      Genres,
+			"Mediatypes":  Mediatypes,
 		})
 	}
 }
@@ -79,9 +79,9 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 	}
 }
 func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
-	collections := collect.ListCollections(db)
-	genres := stockdata.ListGenres(db)
-	mediatypes := stockdata.ListMediatypes(db)
+	Collections := collect.ListCollections(db)
+	Genres := stockdata.ListGenres(db)
+	Mediatypes := stockdata.ListMediatypes(db)
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
@@ -96,9 +96,9 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
 		c.HTML(http.StatusOK, "entries/edit.html", gin.H{
 			"Entry":       entry,
-			"Collections": collections,
-			"Genres":      genres,
-			"Mediatypes":  mediatypes,
+			"Collections": Collections,
+			"Genres":      Genres,
+			"Mediatypes":  Mediatypes,
 		})
 	}
 }
