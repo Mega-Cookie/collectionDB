@@ -9,60 +9,58 @@
   </head>
   <body>
     <div class="max-w-4xl mx-auto p-4">
-      <form action="/create_entry" method="POST" class="bg-white p-6">
+      <form action="/create_entry" method="POST">
         <div class="flex justify-between items-center mb-4 pb-4 border-b">
-          <div class="flex items-center">
-            <div class="mb-4">
-              <input type="text" id="title" name="title" placeholder="Title" required
-              class="w-full p-2 text-4xl font-bold focus:outline-none">
-            </div>
+          <div>
+            <input class="w-full text-4xl font-bold focus:outline-none" type="text" id="title" name="title" placeholder="Title" required>
           </div>
           <div>
-            <button type="submit" class="text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800">
-            Create Entry
+            <button type="submit">
+              <a class="mr-1 text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create</a>
+            </button>
+            <button>
+              <a href="/" class="ml-1 text-lg bg-red-200 text-red-800 py-2 px-2 rounded-md border-2 border-red-800 hover:bg-red-400">Cancel</a>
             </button>
           </div>
-          <a href="/" class="text-lg bg-red-200 text-red-800 py-2 px-2 rounded-md border-2 border-red-800">Cancel</a>
         </div>
-          <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label for="year" class="text-lg mr-2">Year:</label>
+            <input type="number" id="year" name="year" value="2000" required class="border-2 border-blue-800 rounded-md">
             <div>
-              <label for="year" class="text-lg mr-2">Year:</label>
-              <input type="number" id="year" name="year" value="2000" required class="border-2 border-blue-800 rounded-md">
-              <div>
-              <label for="mediatype" class="text-lg mr-2">Type of physical media:</label>
-                <select id="typeid" name="typeid" class="mr-2" required>
-                  {{range .Types}}
-                  <option value="{{.ID}}">{{.Name}}</option>
-                  {{end}}
-                  <option value="0" selected hidden>--Choose Type--</option>
-                </select>
-              </div>
-              <div>
+              <label for="mediatypes" class="text-lg mr-2">Type of physical media:</label>
+              <select id="typeid" name="typeid" class="mr-2" required>
+                {{range .Mediatypes}}
+                <option value="{{.ID}}">{{.Name}}</option>
+                {{end}}
+                <option value="0" selected hidden>--Choose Type--</option>
+              </select>
+            </div>
+            <div>
               <label for="collection" class="text-lg mr-2">Collection:</label>
-                <select id="collid" name="collid" class="mr-2" required>
-                  {{range .Collections}}
-                  <option value="{{.ID}}">{{.Name}}</option>
-                  {{end}}
-                  <option value="0" selected hidden>--Choose Collection--</option>
-                </select>
-              </div>
-              <div>
-              <label for="type" class="text-lg mr-2">Genre:</label>
-                <select id="genreid" name="genreid" class="mr-2" required>
-                  {{range .Genres}}
-                  <option value="{{.ID}}">{{.Name}}</option>
-                  {{end}}
-                  <option value="0" selected hidden>--Choose Genre--</option>
-                </select>
-              </div>
-              <label for="is_digital" class="text-lg mr-2">Media is digitized:</label>
-              <input type="checkbox" id="is_digital" name="is_digital" class="mr-2">
+              <select id="collid" name="collid" class="mr-2" required>
+                {{range .Collections}}
+                <option value="{{.ID}}">{{.Name}}</option>
+                {{end}}
+                <option value="0" selected hidden>--Choose Collection--</option>
+              </select>
             </div>
             <div>
-              <textarea id="plot" name="plot" rows="5" placeholder="Plot" required
-              class="w-full p-4 text-md border-2 border-blue-800 rounded-md"></textarea>
+              <label for="genres" class="text-lg mr-2">Genre:</label>
+              <select id="genreid" name="genreid" class="mr-2" required>
+                {{range .Genres}}
+                <option value="{{.ID}}">{{.Name}}</option>
+                {{end}}
+                <option value="0" selected hidden>--Choose Genre--</option>
+              </select>
             </div>
+            <label for="is_digital" class="text-lg mr-2">Media is digitized:</label>
+            <input type="checkbox" id="is_digital" name="is_digital" class="mr-2">
           </div>
+          <div>
+            <textarea id="plot" name="plot" rows="5" placeholder="Plot" required class="w-full p-4 text-md border-2 border-blue-800 rounded-md"></textarea>
+          </div>
+        </div>
       </form>
     </div>
   </body>
