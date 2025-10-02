@@ -5,5 +5,8 @@ Description=A simple webapp for managing your collections of physical media writ
 Type=simple
 ExecStart=/usr/bin/collectionDB -config /etc/collectionDB/config.yml
 
+StandardOutput=journal+file:/var/log/collectionDB/default.log
+StandardError=journal+file:/var/log/collectionDB/error.log
+
 [Install]
 WantedBy=multi-user.target
