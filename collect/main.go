@@ -41,6 +41,7 @@ func ListCollections(db *sql.DB) (collections []Collection) {
 func ShowCreateCollectionPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		categories := stockdata.ListCategories(db)
+		c.Header("Cache-Control", "no-store")
 		c.HTML(http.StatusOK, "collections/create.html", gin.H{
 			"Categories": categories,
 		})
@@ -57,12 +58,12 @@ func CreateCollection(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		c.Header("Cache-Control", "no-store")
 		c.Redirect(http.StatusFound, "/")
 	}
 }
 func ShowEditCollectionPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		categories := stockdata.ListCategories(db)
 		id := c.Param("id")
 		var collection Collection
 		query := "SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID WHERE c.collectionID = ?"
@@ -72,8 +73,10 @@ func ShowEditCollectionPage(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		categories := stockdata.ListCategories(db)
 		collection.CreatedAt = small.SetTime(db, &collection.CreatedAt)
 		collection.EditedAt = small.SetTime(db, &collection.EditedAt)
+		c.Header("Cache-Control", "no-store")
 		c.HTML(http.StatusOK, "collections/edit.html", gin.H{
 			"Collection": collection,
 			"Categories": categories,
@@ -93,6 +96,7 @@ func EditCollection(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		c.Header("Cache-Control", "no-store")
 		c.Redirect(http.StatusFound, "/")
 	}
 }
@@ -109,6 +113,7 @@ func ViewCollection(db *sql.DB) gin.HandlerFunc {
 		}
 		collection.CreatedAt = small.SetTime(db, &collection.CreatedAt)
 		collection.EditedAt = small.SetTime(db, &collection.EditedAt)
+		c.Header("Cache-Control", "no-store")
 		c.HTML(http.StatusOK, "collections/view.html", collection)
 	}
 }
@@ -121,6 +126,7 @@ func DeleteCollection(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		c.Header("Cache-Control", "no-store")
 		c.Redirect(http.StatusFound, "/")
 	}
 }

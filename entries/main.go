@@ -53,6 +53,7 @@ func ShowCreateEntryPage(db *sql.DB) gin.HandlerFunc {
 		collections := collect.ListCollections(db)
 		mediatypes := stockdata.ListMediatypes(db)
 		genres := stockdata.ListGenres(db)
+		c.Header("Cache-Control", "no-store")
 		c.HTML(http.StatusOK, "entries/create.html", gin.H{
 			"Collections": collections,
 			"Genres":      genres,
@@ -75,13 +76,11 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		c.Header("Cache-Control", "no-store")
 		c.Redirect(http.StatusFound, "/")
 	}
 }
 func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
-	collections := collect.ListCollections(db)
-	genres := stockdata.ListGenres(db)
-	mediatypes := stockdata.ListMediatypes(db)
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
@@ -92,8 +91,12 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		collections := collect.ListCollections(db)
+		genres := stockdata.ListGenres(db)
+		mediatypes := stockdata.ListMediatypes(db)
 		entry.CreatedAt = small.SetTime(db, &entry.CreatedAt)
 		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
+		c.Header("Cache-Control", "no-store")
 		c.HTML(http.StatusOK, "entries/edit.html", gin.H{
 			"Entry":       entry,
 			"Collections": collections,
@@ -119,6 +122,7 @@ func EditEntry(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		c.Header("Cache-Control", "no-store")
 		c.Redirect(http.StatusFound, "/")
 	}
 }
@@ -135,7 +139,7 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 		}
 		entry.CreatedAt = small.SetTime(db, &entry.CreatedAt)
 		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
-
+		c.Header("Cache-Control", "no-store")
 		c.HTML(http.StatusOK, "entries/view.html", entry)
 	}
 }
@@ -148,6 +152,7 @@ func DeleteEntry(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+		c.Header("Cache-Control", "no-store")
 		c.Redirect(http.StatusFound, "/")
 	}
 }
