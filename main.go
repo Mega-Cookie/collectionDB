@@ -4,6 +4,7 @@ import (
 	"collectionDB/collect"
 	"collectionDB/entries"
 	"collectionDB/small"
+	"collectionDB/stockdata"
 	"database/sql"
 	"log"
 	"net/http"
@@ -137,6 +138,18 @@ func ShowList(db *sql.DB) gin.HandlerFunc {
 		})
 	}
 }
+func ShowStockList(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		mediatypes := stockdata.ListMediatypes(db)
+		categories := stockdata.ListCategories(db)
+		genres := stockdata.ListGenres(db)
+		c.HTML(http.StatusOK, "stock/index.html", gin.H{
+			"Mediatypes": mediatypes,
+			"Categories": categories,
+			"Genres":     genres,
+		})
+	}
+}
 func main() {
 	config := small.Configure()
 	initDB(config.Database)
@@ -148,18 +161,19 @@ func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob(config.Templates)
 	router.GET("/", ShowList(db))
+	router.GET("/stock", ShowStockList(db))
+	router.GET("/entries/:id", entries.ViewEntry(db))
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
 	router.GET("/entries/:id/edit", entries.ShowEditEntryPage(db))
 	router.POST("/entries/:id/edit", entries.EditEntry(db))
 	router.POST("/entries/:id/delete", entries.DeleteEntry(db))
-	router.GET("/entries/:id", entries.ViewEntry(db))
+	router.GET("/collections/:id", collect.ViewCollection(db))
 	router.GET("/create_collection", collect.ShowCreateCollectionPage(db))
 	router.POST("/create_collection", collect.CreateCollection(db))
 	router.GET("/collections/:id/edit", collect.ShowEditCollectionPage(db))
 	router.POST("/collections/:id/edit", collect.EditCollection(db))
 	router.POST("/collections/:id/delete", collect.DeleteCollection(db))
-	router.GET("/collections/:id", collect.ViewCollection(db))
 	log.Printf("Server is running on http://%s", config.Listen)
 	log.Printf("Acessing SQLite: %s", config.Database)
 	if err := router.Run(config.Listen); err != nil {
