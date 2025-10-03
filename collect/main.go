@@ -48,10 +48,10 @@ func ShowCreateCollectionPage(db *sql.DB) gin.HandlerFunc {
 }
 func CreateCollection(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		Name := c.PostForm("name")
-		CatID := c.PostForm("catid")
-		Description := c.PostForm("description")
-		_, err := db.Exec(`INSERT INTO collections (NAME, categoryID, DESCRIPTION) VALUES (?, ?, ?)`, Name, CatID, Description)
+		name := c.PostForm("name")
+		catid := c.PostForm("catid")
+		description := c.PostForm("description")
+		_, err := db.Exec(`INSERT INTO collections (NAME, categoryID, DESCRIPTION) VALUES (?, ?, ?)`, name, catid, description)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create collection!"})
 			fmt.Println(err)
@@ -82,12 +82,12 @@ func ShowEditCollectionPage(db *sql.DB) gin.HandlerFunc {
 }
 func EditCollection(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		Name := c.PostForm("name")
-		CatID := c.PostForm("catid")
-		Description := c.PostForm("description")
+		name := c.PostForm("name")
+		catid := c.PostForm("catid")
+		description := c.PostForm("description")
 		id := c.Param("id")
 		updateTableQuery := `UPDATE collections SET NAME = ?, categoryID = ?, DESCRIPTION = ?, EDITED_AT = CURRENT_TIMESTAMP where collectionID = ?`
-		_, err := db.Exec(updateTableQuery, Name, CatID, Description, id)
+		_, err := db.Exec(updateTableQuery, name, catid, description, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit entry"})
 			fmt.Println(err)

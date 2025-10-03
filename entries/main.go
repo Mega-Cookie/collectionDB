@@ -50,26 +50,26 @@ func ListEntries(db *sql.DB) (entries []Entry) {
 }
 func ShowCreateEntryPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		Collections := collect.ListCollections(db)
-		Mediatypes := stockdata.ListMediatypes(db)
-		Genres := stockdata.ListGenres(db)
+		collections := collect.ListCollections(db)
+		mediatypes := stockdata.ListMediatypes(db)
+		genres := stockdata.ListGenres(db)
 		c.HTML(http.StatusOK, "entries/create.html", gin.H{
-			"Collections": Collections,
-			"Genres":      Genres,
-			"Mediatypes":  Mediatypes,
+			"Collections": collections,
+			"Genres":      genres,
+			"Mediatypes":  mediatypes,
 		})
 	}
 }
 func CreateEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		Title := c.PostForm("title")
-		Plot := c.PostForm("plot")
-		Typeid := c.PostForm("typeid")
-		Genreid := c.PostForm("genreid")
-		Year := c.PostForm("year")
-		Collid := c.PostForm("collid")
-		IsDigital := c.PostForm("is_digital") == "on"
-		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, typeID, collectionID,genreID, IS_DIGITAL) VALUES (?, ?, ?, ?, ?, ?, ?)`, Title, Year, Plot, Typeid, Collid, Genreid, IsDigital)
+		title := c.PostForm("title")
+		plot := c.PostForm("plot")
+		typeid := c.PostForm("typeid")
+		genreid := c.PostForm("genreid")
+		year := c.PostForm("year")
+		collid := c.PostForm("collid")
+		isdigital := c.PostForm("is_digital") == "on"
+		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, typeID, collectionID,genreID, IS_DIGITAL) VALUES (?, ?, ?, ?, ?, ?, ?)`, title, year, plot, typeid, collid, genreid, isdigital)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
 			fmt.Println(err)
@@ -79,9 +79,9 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 	}
 }
 func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
-	Collections := collect.ListCollections(db)
-	Genres := stockdata.ListGenres(db)
-	Mediatypes := stockdata.ListMediatypes(db)
+	collections := collect.ListCollections(db)
+	genres := stockdata.ListGenres(db)
+	mediatypes := stockdata.ListMediatypes(db)
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
@@ -96,24 +96,24 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
 		c.HTML(http.StatusOK, "entries/edit.html", gin.H{
 			"Entry":       entry,
-			"Collections": Collections,
-			"Genres":      Genres,
-			"Mediatypes":  Mediatypes,
+			"Collections": collections,
+			"Genres":      genres,
+			"Mediatypes":  mediatypes,
 		})
 	}
 }
 func EditEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		Title := c.PostForm("title")
-		Plot := c.PostForm("plot")
-		Typeid := c.PostForm("typeid")
-		Genreid := c.PostForm("genreid")
-		Year := c.PostForm("year")
-		Collid := c.PostForm("collid")
-		IsDigital := c.PostForm("is_digital") == "on"
+		title := c.PostForm("title")
+		plot := c.PostForm("plot")
+		typeid := c.PostForm("typeid")
+		genreid := c.PostForm("genreid")
+		year := c.PostForm("year")
+		collid := c.PostForm("collid")
+		isdigital := c.PostForm("is_digital") == "on"
 		id := c.Param("id")
 		updateTableQuery := `UPDATE entries SET TITLE = ?, YEAR = ?, PLOT = ?, typeID = ?, genreID = ?, IS_DIGITAL = ?, collectionID = ?, EDITED_AT = CURRENT_TIMESTAMP where entryID = ?`
-		_, err := db.Exec(updateTableQuery, Title, Year, Plot, Typeid, Genreid, IsDigital, Collid, id)
+		_, err := db.Exec(updateTableQuery, title, year, plot, typeid, genreid, isdigital, collid, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit entry"})
 			fmt.Println(err)

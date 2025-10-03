@@ -14,13 +14,13 @@ import (
 	"github.com/zcalusic/sysinfo"
 )
 
-var VERSION string
-var HOSTNAME string
+var version string
+var hostname string
 var info sysinfo.SysInfo
-var OS string
-var ARCH string
-var TZONE string
-var GOVERSION string
+var operatingsystem string
+var arch string
+var tzone string
+var goversion string
 
 type config struct {
 	Listen    string `json:"listen"`
@@ -62,22 +62,22 @@ func SetSystemInfo(db *sql.DB) {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		VERSION = scanner.Text()
+		version = scanner.Text()
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("error reading file: %s", err)
 	}
 	info.GetSysInfo()
-	HOSTNAME = info.Node.Hostname
-	OS = info.OS.Name
-	ARCH = info.Kernel.Architecture
-	TZONE = info.Node.Timezone
-	GOVERSION = runtime.Version()
-	_, err = db.Exec(`INSERT OR IGNORE INTO info (HOSTNAME) VALUES (?)`, HOSTNAME)
+	hostname = info.Node.Hostname
+	operatingsystem = info.OS.Name
+	arch = info.Kernel.Architecture
+	tzone = info.Node.Timezone
+	goversion = runtime.Version()
+	_, err = db.Exec(`INSERT OR IGNORE INTO info (HOSTNAME) VALUES (?)`, hostname)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = db.Exec(`UPDATE info SET VERSION = ?, OS = ?, ARCH = ?, GOVERSION = ?, TIMEZONE = ?`, VERSION, OS, ARCH, GOVERSION, TZONE)
+	_, err = db.Exec(`UPDATE info SET VERSION = ?, OS = ?, ARCH = ?, TIMEZONE = ?, GOVERSION = ?`, version, operatingsystem, arch, tzone, goversion)
 	if err != nil {
 		log.Fatal(err)
 	}
