@@ -1,11 +1,11 @@
 Name:           collectionDB
-Version:        pre.alpha.1
+Version:        0.0.2alpha2
 Release:        1%{?dist}
 Summary:        A simple webapp for managing your collections of physical media written in Go with SQLite.
 
 License:        GPLv3
 URL:            https://github.com/Mega-Cookie/collectionDB
-Source0:        collectionDB-pre.alpha.1.tar.gz
+Source0:        collectionDB-0.0.2alpha2.tar.gz
 
 BuildRequires:  golang
 BuildRequires:	systemd-rpm-macros
@@ -49,3 +49,9 @@ cp -a templates/* %{buildroot}%{_sysconfdir}/%{name}/templates/
 %changelog
 * Wed Oct 01 2025 Mega-Cookie - pre.alpha.1
 - Implementation of basic functionalities by @Mega-Cookie
++ Fri Oct 03 2025 Mega-Cookie - 0.0.2alpha2
+- Display server time in view and edit pages by @Mega-Cookie
+- Set listening address, port, database file and debug mode through config file by @Mega-Cookie
+- Save GO version in database by @Mega-Cookie
+- Add logging by @Mega-Cookie
+- Add edit and back buttons by @Mega-Cookie
