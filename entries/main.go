@@ -70,7 +70,7 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 		year := c.PostForm("year")
 		collid := c.PostForm("collid")
 		isdigital := c.PostForm("is_digital") == "on"
-		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, typeID, collectionID,genreID, IS_DIGITAL) VALUES (?, ?, ?, ?, ?, ?, ?)`, title, year, plot, typeid, collid, genreid, isdigital)
+		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, typeID, collectionID, genreID, IS_DIGITAL) VALUES (?, ?, ?, ?, ?, ?, ?)`, title, year, plot, typeid, collid, genreid, isdigital)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
 			fmt.Println(err)
