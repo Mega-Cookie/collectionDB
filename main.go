@@ -18,34 +18,34 @@ var db *sql.DB
 
 func setStockData() {
 	var err error
-	_, err = db.Exec(`INSERT OR IGNORE INTO mediatypes (NAME)
+	_, err = db.Exec(`INSERT OR IGNORE INTO mediatypes (NAME, STOCK)
 		VALUES
-		('CD'),
-		('BlueRay'),
-		('DVD'),
-		('Manga'),
-		('Comic'),
-		('Book');`)
+		('CD', '1'),
+		('BlueRay', '1'),
+		('DVD', '1'),
+		('Manga', '1'),
+		('Comic', '1'),
+		('Book', '1');`)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = db.Exec(`INSERT OR IGNORE INTO categories (NAME)
+	_, err = db.Exec(`INSERT OR IGNORE INTO categories (NAME, STOCK)
 		VALUES
-		('Movie'),
-		('TV-Series'),
-		('Music'),
-		('Literature');`)
+		('Movie', '1'),
+		('TV-Series', '1'),
+		('Music', '1'),
+		('Literature', '1');`)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = db.Exec(`INSERT OR IGNORE INTO genres (NAME)
+	_, err = db.Exec(`INSERT OR IGNORE INTO genres (NAME, STOCK)
 		VALUES
-		('Fantasy'),
-		('Romance'),
-		('Action'),
-		('Science Fiction'),
-		('Musical'),
-		('Horror');`)
+		('Fantasy', '1'),
+		('Romance', '1'),
+		('Action', '1'),
+		('Science Fiction', '1'),
+		('Musical', '1'),
+		('Horror', '1');`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +59,9 @@ func initDB(databasefile string) {
 	}
 	createTableQuery := `CREATE TABLE IF NOT EXISTS mediatypes (
 		typeID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE
+		NAME STRING UNIQUE,
+		STOCK BOOL NOT NULL DEFAULT 0,
+		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
@@ -68,7 +70,9 @@ func initDB(databasefile string) {
 
 	createTableQuery = `CREATE TABLE IF NOT EXISTS genres (
 		genreID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE
+		NAME STRING UNIQUE,
+		STOCK BOOL NOT NULL DEFAULT 0,
+		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
@@ -76,8 +80,43 @@ func initDB(databasefile string) {
 	}
 	createTableQuery = `CREATE TABLE IF NOT EXISTS categories (
 		categoryID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE
+		NAME STRING UNIQUE,
+		STOCK BOOL NOT NULL DEFAULT 0,
+		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stocktype
+		BEFORE DELETE ON mediatypes
+		WHEN OLD.STOCK = 1
+		BEGIN
+    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
+		END
+		;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stockcat
+		BEFORE DELETE ON categories
+		WHEN OLD.STOCK = 1
+		BEGIN
+    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
+		END
+		;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stockgenre
+		BEFORE DELETE ON genres
+		WHEN OLD.STOCK = 1
+		BEGIN
+    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
+		END
+		;`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		log.Fatal(err)
@@ -162,6 +201,12 @@ func main() {
 	router.LoadHTMLGlob(config.Templates)
 	router.GET("/", ShowList(db))
 	router.GET("/stock", ShowStockList(db))
+	router.POST("/stock/mediatype/create", stockdata.CreateType(db))
+	router.POST("/stock/category/create", stockdata.CreateCategory(db))
+	router.POST("/stock/genre/create", stockdata.CreateGenre(db))
+	router.POST("/stock/mediatype/:id/delete", stockdata.DeleteType(db))
+	router.POST("/stock/category/:id/delete", stockdata.DeleteCategory(db))
+	router.POST("/stock/genre/:id/delete", stockdata.DeleteGenre(db))
 	router.GET("/entries/:id", entries.ViewEntry(db))
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
