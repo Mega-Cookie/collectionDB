@@ -1,13 +1,5 @@
 {{define "stock/index.html"}}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock data</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body>
+{{template "header.html"}}
     <div class="mx-auto p-4 grid grid-cols-3 gap-2 flex">
       <div class="p-4 border-2 h-fit border-gray-300 rounded-xl">
         <div class="pb-2">
@@ -114,7 +106,5 @@
           </form>
         </div>
       </div>
-    </div>
-  </body>
-</html>
+{{template "footer.html"}}
 {{end}}
