@@ -207,6 +207,7 @@ func main() {
 	}
 	small.SetSystemInfo(db)
 	router := gin.Default()
+	router.Static("/static", "./static")
 	router.LoadHTMLGlob(config.Templates)
 	router.GET("/", ShowList(db))
 	router.GET("/stock", ShowStockList(db))
