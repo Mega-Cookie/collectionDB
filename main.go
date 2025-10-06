@@ -160,6 +160,7 @@ func initDB(databasefile string) {
 		OS STRING,
 		ARCH STRING,
 		GOVERSION STRING,
+		SQLITEVERSION STRING,
 		TIMEZONE STRING
 	);`
 	_, err = db.Exec(createTableQuery)

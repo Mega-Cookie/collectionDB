@@ -1,32 +1,48 @@
 {{template "header.html"}}
-<div cless="max-w-4xl">
-<div class="p-4 flex justify-self-center grid grid-cols-1 place-items-center">
-<span class="w-full flex my-1 flex text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl">About CollectionDB</span>
-<span class="w-full my-1 flex text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl">{{.Info.Version}}</span>
-    <div class="w-fit flex grid grid-cols-2 gap-2 px-4 border-2 h-fit border-gray-300 rounded-xl">
-        <div>
-            <div class="py-1">
-                <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Operating System</span>
+<div class="p-4 w-full grid grid-cols-1 place-items-center">
+    <div class="w-fit p-2 flex grid grid-cols-1 place-items-center border-2 border-gray-300 rounded-xl">
+        <span class="w-full my-1 flex grid grid-cols-1 text-2xl place-items-center border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl">
+            <h1>About</h1>
+        </span>
+        <div class="w-fit h-fit flex grid grid-cols-2 gap-2 px-2 border-2 border-gray-300 rounded-xl">
+            <div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">CollectionDB</span>
+                </div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Operating System</span>
+                </div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Go</span>
+                </div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">SQLite</span>
+                </div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Timezone</span>
+                </div>
             </div>
-            <div class="py-1">
-                <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Go</span>
-            </div>
-            <div class="py-1">
-                <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Timezone</span>
+            <div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">{{.Info.Version}}</span>
+                </div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">{{.Info.OS}}</span>
+                </div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">{{.Info.GoVersion}}</span>
+                </div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">{{.Info.SQLiteVersion}}</span>
+                </div>
+                <div class="py-1">
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">{{.Info.Timezone}}</span>
+                </div>
             </div>
         </div>
-        <div>
-            <div class="py-1">
-                <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">{{.Info.OS}}</span>
-            </div>
-            <div class="py-1">
-                <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">{{.Info.GoVersion}}</span>
-            </div>
-            <div class="py-1">
-                <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">{{.Info.Timezone}}</span>
-            </div>
-        </div>
-    </div>
+        <span class="w-full my-1 flex grid grid-cols-1 text-l place-items-center border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl">
+            <a href="https://github.com/Mega-Cookie/collectionDB">GitHub</a>
+        </span>
     </div>
 </div>
 {{template "footer.html"}}

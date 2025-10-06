@@ -29,13 +29,14 @@ type config struct {
 	IsDebug   bool   `json:"debug"`
 }
 type systeminfo struct {
-	ID        int    `json:"id"`
-	Version   string `json:"version"`
-	Hostname  string `json:"hostname"`
-	OS        string `json:"os"`
-	Arch      string `json:"arch"`
-	GoVersion string `json:"go_version"`
-	Timezone  string `json:"tzone"`
+	ID            int    `json:"id"`
+	Version       string `json:"version"`
+	Hostname      string `json:"hostname"`
+	OS            string `json:"os"`
+	Arch          string `json:"arch"`
+	GoVersion     string `json:"go_version"`
+	SQLiteVersion string `json:"sqliteversion"`
+	Timezone      string `json:"tzone"`
 }
 
 func Configure() (config config) {
@@ -90,6 +91,10 @@ func SetSystemInfo(db *sql.DB) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	_, err = db.Exec(`UPDATE info SET SQLITEVERSION = (SELECT sqlite_version())`, version, operatingsystem, arch, tzone, goversion)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 func SetTime(db *sql.DB, stamp *time.Time) (newstamp time.Time) {
 	var location *time.Location
@@ -111,6 +116,6 @@ func SetTime(db *sql.DB, stamp *time.Time) (newstamp time.Time) {
 func GetSystemInfo(db *sql.DB) (systeminfo systeminfo) {
 	query := "SELECT * FROM info WHERE instanceID = 1"
 	response := db.QueryRow(query)
-	response.Scan(&systeminfo.ID, &systeminfo.Version, &systeminfo.Hostname, &systeminfo.OS, &systeminfo.Arch, &systeminfo.GoVersion, &systeminfo.Timezone)
+	response.Scan(&systeminfo.ID, &systeminfo.Version, &systeminfo.Hostname, &systeminfo.OS, &systeminfo.Arch, &systeminfo.GoVersion, &systeminfo.SQLiteVersion, &systeminfo.Timezone)
 	return
 }
