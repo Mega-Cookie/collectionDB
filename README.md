@@ -1,4 +1,7 @@
 # collectionDB
+
+![image](static/logo.svg)
+
 A simple webapp for managing your collections of physical media written in Go with SQLite.
 
 ## Usage
