@@ -207,6 +207,9 @@ func main() {
 	}
 	small.SetSystemInfo(db)
 	router := gin.Default()
+	if config.IsReverseProxy {
+		router.SetTrustedProxies([]string{"127.0.0.1"})
+	}
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob(config.Templates)
 	router.GET("/", ShowList(db))
