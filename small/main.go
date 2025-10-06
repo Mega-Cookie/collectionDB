@@ -23,10 +23,11 @@ var tzone string
 var goversion string
 
 type config struct {
-	Listen    string `json:"listen"`
-	Database  string `json:"database"`
-	Templates string `json:"templates"`
-	IsDebug   bool   `json:"debug"`
+	Listen         string `json:"listen"`
+	Database       string `json:"database"`
+	Templates      string `json:"templates"`
+	IsDebug        bool   `json:"debug"`
+	IsReverseProxy bool   `json:"proxy"`
 }
 type systeminfo struct {
 	ID            int    `json:"id"`
