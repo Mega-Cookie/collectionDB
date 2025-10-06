@@ -160,6 +160,7 @@ func initDB(databasefile string) {
 		OS STRING,
 		ARCH STRING,
 		GOVERSION STRING,
+		SQLITEVERSION STRING,
 		TIMEZONE STRING
 	);`
 	_, err = db.Exec(createTableQuery)
@@ -189,6 +190,14 @@ func ShowStockList(db *sql.DB) gin.HandlerFunc {
 		})
 	}
 }
+func ShowAbout(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		systeminfo := small.GetSystemInfo(db)
+		c.HTML(http.StatusOK, "about.html", gin.H{
+			"Info": systeminfo,
+		})
+	}
+}
 func main() {
 	config := small.Configure()
 	initDB(config.Database)
@@ -201,6 +210,7 @@ func main() {
 	router.LoadHTMLGlob(config.Templates)
 	router.GET("/", ShowList(db))
 	router.GET("/stock", ShowStockList(db))
+	router.GET("/about", ShowAbout(db))
 	router.POST("/stock/mediatype/create", stockdata.CreateType(db))
 	router.POST("/stock/category/create", stockdata.CreateCategory(db))
 	router.POST("/stock/genre/create", stockdata.CreateGenre(db))

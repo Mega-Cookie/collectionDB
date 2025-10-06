@@ -39,7 +39,6 @@ func ListMediatypes(db *sql.DB) (mediatypes []Mediatypes) {
 		rows.Scan(&mediatype.ID, &mediatype.Name, &mediatype.IsStock, &mediatype.CreatedAt)
 		mediatypes = append(mediatypes, mediatype)
 	}
-	fmt.Println(mediatypes)
 	return
 }
 func ListCategories(db *sql.DB) (categories []Categories) {
