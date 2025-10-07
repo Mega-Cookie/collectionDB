@@ -17,6 +17,7 @@ The `config.yml` contains basic configuration options:
 "debug":      false, ### set to true to log debug output
 "proxy":      false, ### set to true to only allow traffic from localhost (for running behind a reverse proxy)
 "tls":        false, ### set to true to activate HTTPS (required `cert` and `key`)
+"tls_listen": "127.0.0.1:8888", ### Listening Adress and Port for TLS
 "cert":       "", ### Location of the SSL certifiate
 "key":        "" ### Location of the SSL key
 }
