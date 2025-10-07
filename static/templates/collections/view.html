@@ -1,14 +1,6 @@
 {{define "collections/view.html"}}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collection: {{.Name}}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body>
-    <div class="max-w-4xl mx-auto p-4">
+{{template "header.html"}}
+<div style="margin-left:150px;padding:1px 16px;height:1000px;">
       <div class="flex justify-between items-center mb-4 pb-4 border-b">
         <div>
           <a class="text-3xl font-bold mb-4">{{.Name}}</a>  
@@ -26,7 +18,6 @@
       <h1 class="text-xl font-bold mb-1">Description</h1>          
       <p class="text-lg text-gray-700 mt-10 mb-6">{{.Description}}</p>
       <p class="text-sm text-gray-500"><em>Created on: {{.CreatedAt}} - Edited on: {{.EditedAt}}</em></p>
-    </div>
-  </body>
-</html>
+  </div>
+{{template "footer.html"}}
 {{end}}

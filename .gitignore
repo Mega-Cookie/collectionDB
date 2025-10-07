@@ -1,2 +1,6 @@
-/collections.db
+/testcollections.db
 /testconfig.yml
+/cert.crt
+/cert.key
+/cert.csr
+/buildrpm

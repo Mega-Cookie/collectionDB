@@ -23,10 +23,25 @@ var tzone string
 var goversion string
 
 type config struct {
-	Listen    string `json:"listen"`
-	Database  string `json:"database"`
-	Templates string `json:"templates"`
-	IsDebug   bool   `json:"debug"`
+	Listen         string `json:"listen"`
+	Database       string `json:"database"`
+	Static         string `json:"static"`
+	IsDebug        bool   `json:"debug"`
+	IsReverseProxy bool   `json:"proxy"`
+	IsTLS          bool   `json:"tls"`
+	TLSListen      string `json:"tls_listen"`
+	Cert           string `json:"cert"`
+	Key            string `json:"key"`
+}
+type systeminfo struct {
+	ID            int    `json:"id"`
+	Version       string `json:"version"`
+	Hostname      string `json:"hostname"`
+	OS            string `json:"os"`
+	Arch          string `json:"arch"`
+	GoVersion     string `json:"go_version"`
+	SQLiteVersion string `json:"sqliteversion"`
+	Timezone      string `json:"tzone"`
 }
 
 func Configure() (config config) {
@@ -81,6 +96,10 @@ func SetSystemInfo(db *sql.DB) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	_, err = db.Exec(`UPDATE info SET SQLITEVERSION = (SELECT sqlite_version())`, version, operatingsystem, arch, tzone, goversion)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 func SetTime(db *sql.DB, stamp *time.Time) (newstamp time.Time) {
 	var location *time.Location
@@ -89,15 +108,19 @@ func SetTime(db *sql.DB, stamp *time.Time) (newstamp time.Time) {
 	err := db.QueryRow(query).Scan(&zone)
 	if err != nil {
 		fmt.Println("error: Failed to get timezone")
-		fmt.Println(err)
 		return
 	}
 	location, err = time.LoadLocation(zone)
 	if err != nil {
 		fmt.Println("error: Failed to set timezone")
-		fmt.Println(err)
 		return
 	}
 	newstamp = stamp.In(location)
+	return
+}
+func GetSystemInfo(db *sql.DB) (systeminfo systeminfo) {
+	query := "SELECT * FROM info WHERE instanceID = 1"
+	response := db.QueryRow(query)
+	response.Scan(&systeminfo.ID, &systeminfo.Version, &systeminfo.Hostname, &systeminfo.OS, &systeminfo.Arch, &systeminfo.GoVersion, &systeminfo.SQLiteVersion, &systeminfo.Timezone)
 	return
 }
