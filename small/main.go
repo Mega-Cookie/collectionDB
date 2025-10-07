@@ -29,6 +29,7 @@ type config struct {
 	IsDebug        bool   `json:"debug"`
 	IsReverseProxy bool   `json:"proxy"`
 	IsTLS          bool   `json:"tls"`
+	TLSListen      string `json:"tls_listen"`
 	Cert           string `json:"cert"`
 	Key            string `json:"key"`
 }

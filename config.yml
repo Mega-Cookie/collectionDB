@@ -5,6 +5,7 @@
 "debug":      false,
 "proxy":      false,
 "tls":        true,
+"tls_listen": "127.0.0.1:8888",
 "cert":       "",
 "key":        ""
 }
