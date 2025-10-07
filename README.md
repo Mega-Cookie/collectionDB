@@ -13,7 +13,7 @@ The `config.yml` contains basic configuration options:
 {
 "listen":     "127.0.0.1:8080", ### Listening Adress and Port
 "database":   "/var/lib/collectionDB/collections.db", ### Location where the SQLite file will be created
-"templates":  "/etc/collectionDB/templates/**/*.html", ### Location of the html templates
+"static   ":  "/etc/collectionDB/static", ### Location of the static files
 "debug":      false, ### set to true to log debug output
 "proxy":      false, ### set to true to only allow traffic from localhost (for running behind a reverse proxy)
 "tls":        false, ### set to true to activate HTTPS (required `cert` and `key`)
