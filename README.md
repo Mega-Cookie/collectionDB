@@ -15,7 +15,10 @@ The `config.yml` contains basic configuration options:
 "database":   "/var/lib/collectionDB/collections.db", ### Location where the SQLite file will be created
 "templates":  "/etc/collectionDB/templates/**/*.html", ### Location of the html templates
 "debug":      false, ### set to true to log debug output
-"proxy":      false ### set to true to only allow traffic from localhost (for running behind a reverse proxy)
+"proxy":      false, ### set to true to only allow traffic from localhost (for running behind a reverse proxy)
+"tls":        false, ### set to true to activate HTTPS (required `cert` and `key`)
+"cert":       "", ### Location of the SSL certifiate
+"key":        "" ### Location of the SSL key
 }
 ```
 ### From Source
