@@ -25,7 +25,7 @@ go build -v -o %{name}
 
 %install
 install -Dpm 0755 VERSION %{buildroot}%{_sysconfdir}/%{name}/VERSION
-install -Dpm 0755 config.yml %{buildroot}%{_sysconfdir}/%{name}/config.yml
+install -Dpm 0755 rpm/config.yml %{buildroot}%{_sysconfdir}/%{name}/config.yml
 install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
 install -Dpm 644 %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name}/

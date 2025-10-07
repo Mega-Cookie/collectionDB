@@ -207,6 +207,7 @@ func main() {
 	}
 	small.SetSystemInfo(db)
 	router := gin.Default()
+	router.UseH2C = true
 	if config.IsReverseProxy {
 		router.SetTrustedProxies([]string{"127.0.0.1"})
 	}
