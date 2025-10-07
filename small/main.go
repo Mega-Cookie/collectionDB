@@ -25,7 +25,7 @@ var goversion string
 type config struct {
 	Listen         string `json:"listen"`
 	Database       string `json:"database"`
-	Templates      string `json:"templates"`
+	Static         string `json:"static"`
 	IsDebug        bool   `json:"debug"`
 	IsReverseProxy bool   `json:"proxy"`
 	IsTLS          bool   `json:"tls"`

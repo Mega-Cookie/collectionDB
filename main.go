@@ -6,6 +6,7 @@ import (
 	"collectionDB/small"
 	"collectionDB/stockdata"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -210,8 +211,9 @@ func main() {
 	if config.IsReverseProxy {
 		router.SetTrustedProxies([]string{"127.0.0.1"})
 	}
-	router.Static("/static", "./static")
-	router.LoadHTMLGlob(config.Templates)
+	router.Static("/static", config.Static)
+	templates := fmt.Sprintf("%s/templates/**/*.html", config.Static)
+	router.LoadHTMLGlob(templates)
 	router.GET("/", ShowList(db))
 	router.GET("/stock", ShowStockList(db))
 	router.GET("/about", ShowAbout(db))

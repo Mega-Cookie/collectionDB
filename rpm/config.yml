@@ -1,7 +1,7 @@
 {
 "listen":     "127.0.0.1:8080",
 "database":   "/var/lib/collectionDB/collections.db",
-"templates":  "/etc/collectionDB/templates/**/*.html",
+"static":     "/etc/collectionDB/static",
 "debug":      false,
 "proxy":      false,
 "tls":        true,

@@ -1,11 +1,11 @@
 Name:           collectionDB
-Version:        0.0.2alpha2
+Version:        0.0.2alpha3
 Release:        1%{?dist}
 Summary:        A simple webapp for managing your collections of physical media written in Go with SQLite.
 
 License:        GPLv3
 URL:            https://github.com/Mega-Cookie/collectionDB
-Source0:        collectionDB-0.0.2alpha2.tar.gz
+Source0:        collectionDB-0.0.2alpha3.tar.gz
 
 BuildRequires:  golang
 BuildRequires:	systemd-rpm-macros
@@ -29,8 +29,8 @@ install -Dpm 0755 rpm/config.yml %{buildroot}%{_sysconfdir}/%{name}/config.yml
 install -Dpm 0755 %{name} %{buildroot}%{_bindir}/%{name}
 install -Dpm 644 %{name}.service %{buildroot}%{_unitdir}/%{name}.service
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name}/
-mkdir -p %{buildroot}%{_sysconfdir}/%{name}/templates/
-cp -a templates/* %{buildroot}%{_sysconfdir}/%{name}/templates/
+mkdir -p %{buildroot}%{_sysconfdir}/%{name}/static/
+cp -a static/* %{buildroot}%{_sysconfdir}/%{name}/static/
 
 %post
 %systemd_post %{name}.service
@@ -45,7 +45,7 @@ cp -a templates/* %{buildroot}%{_sysconfdir}/%{name}/templates/
 %{_sysconfdir}/%{name}/config.yml
 %{_bindir}/%{name}
 %{_unitdir}/%{name}.service
-%{_sysconfdir}/%{name}/templates/*
+%{_sysconfdir}/%{name}/static/*
 %changelog
 * Wed Oct 01 2025 Mega-Cookie - pre.alpha.1
 - Implementation of basic functionalities by @Mega-Cookie

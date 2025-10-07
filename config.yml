@@ -1,7 +1,7 @@
 {
 "listen":     "127.0.0.1:8080",
 "database":   "./collections.db",
-"templates":  "./templates/**/*.html",
+"static":     "static",
 "debug":      false,
 "proxy":      false,
 "tls":        true,
