@@ -233,10 +233,10 @@ func main() {
 	router.GET("/collections/:id/edit", collect.ShowEditCollectionPage(db))
 	router.POST("/collections/:id/edit", collect.EditCollection(db))
 	router.POST("/collections/:id/delete", collect.DeleteCollection(db))
-	log.Printf("Server is running on http://%s", config.Listen)
 	log.Printf("Acessing SQLite: %s", config.Database)
 	if config.IsTLS {
-		if err := router.RunTLS(config.Listen, config.Cert, config.Key); err != nil {
+		log.Printf("Server is running on https://%s", config.TLSListen)
+		if err := router.RunTLS(config.TLSListen, config.Cert, config.Key); err != nil {
 			log.Fatalf("Error starting server: %s", err)
 		}
 	} else {
@@ -244,5 +244,6 @@ func main() {
 		if err := router.Run(config.Listen); err != nil {
 			log.Fatalf("Error starting server: %s", err)
 		}
+		log.Printf("Server is running on https://%s", config.TLSListen)
 	}
 }
