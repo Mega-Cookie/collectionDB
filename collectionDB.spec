@@ -42,7 +42,7 @@ cp -a static/* %{buildroot}%{_sysconfdir}/%{name}/static/
 %dir %{_sharedstatedir}/%{name}
 %dir %{_sysconfdir}/%{name}
 %{_sysconfdir}/%{name}/VERSION
-%{_sysconfdir}/%{name}/config.yml
+%config(noreplace) %{_sysconfdir}/%{name}/config.yml
 %{_bindir}/%{name}
 %{_unitdir}/%{name}.service
 %{_sysconfdir}/%{name}/static/*
@@ -55,3 +55,11 @@ cp -a static/* %{buildroot}%{_sysconfdir}/%{name}/static/
 - Save GO version in database by @Mega-Cookie
 - Add logging by @Mega-Cookie
 - Add edit and back buttons by @Mega-Cookie
++ Tue Oct 07 2025 Mega-Cookie - 0.0.2alpha3
+- Edit stock data by @Mega-Cookie
+- Add basic HTTPS functionality by @Mega-Cookie
+- Add navigation sidebar to frontend by @Mega-Cookie
+- Add SQLite Version to About page by @Mega-Cookie
+- Include tailwindcss 4.1 in source code @Mega-Cookie
+- Refactor web UI templates add header footer and navigation for modularity by @Mega-Cookie
+- Update Readme by @Mega-Cookie
