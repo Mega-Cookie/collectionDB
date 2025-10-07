@@ -3,5 +3,8 @@
 "database":   "/var/lib/collectionDB/collections.db",
 "templates":  "/etc/collectionDB/templates/**/*.html",
 "debug":      false,
-"proxy":      false
+"proxy":      false,
+"tls":        true,
+"cert":       "",
+"key":        ""
 }

@@ -3,5 +3,8 @@
 "database":   "./collections.db",
 "templates":  "./templates/**/*.html",
 "debug":      false,
-"proxy":      false
+"proxy":      false,
+"tls":        true,
+"cert":       "",
+"key":        ""
 }

@@ -207,7 +207,6 @@ func main() {
 	}
 	small.SetSystemInfo(db)
 	router := gin.Default()
-	router.UseH2C = true
 	if config.IsReverseProxy {
 		router.SetTrustedProxies([]string{"127.0.0.1"})
 	}
@@ -236,7 +235,14 @@ func main() {
 	router.POST("/collections/:id/delete", collect.DeleteCollection(db))
 	log.Printf("Server is running on http://%s", config.Listen)
 	log.Printf("Acessing SQLite: %s", config.Database)
-	if err := router.Run(config.Listen); err != nil {
-		log.Fatalf("Error starting server: %s", err)
+	if config.IsTLS {
+		if err := router.RunTLS(config.Listen, config.Cert, config.Key); err != nil {
+			log.Fatalf("Error starting server: %s", err)
+		}
+	} else {
+		router.UseH2C = true
+		if err := router.Run(config.Listen); err != nil {
+			log.Fatalf("Error starting server: %s", err)
+		}
 	}
 }

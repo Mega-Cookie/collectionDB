@@ -28,6 +28,9 @@ type config struct {
 	Templates      string `json:"templates"`
 	IsDebug        bool   `json:"debug"`
 	IsReverseProxy bool   `json:"proxy"`
+	IsTLS          bool   `json:"tls"`
+	Cert           string `json:"cert"`
+	Key            string `json:"key"`
 }
 type systeminfo struct {
 	ID            int    `json:"id"`
