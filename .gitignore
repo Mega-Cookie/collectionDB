@@ -2,3 +2,4 @@
 /testconfig.yml
 /cert.crt
 /cert.key
+/cert.csr

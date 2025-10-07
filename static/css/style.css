@@ -132,7 +132,7 @@
     vertical-align: middle;
   }
   img, video {
-    max-width: 100%;
+    max-width: 30%;
     height: auto;
   }
   button, input, select, optgroup, textarea, ::file-selector-button {

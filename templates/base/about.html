@@ -1,13 +1,18 @@
 {{template "header.html"}}
+<div style="margin-left:150px;padding:1px 16px;height:1000px;">
 <div class="p-4 w-full grid grid-cols-1 place-items-center">
     <div class="w-fit p-2 flex grid grid-cols-1 place-items-center border-2 border-gray-300 rounded-xl">
+        <picture>
+            <source media="(max-width: 250px)" srcset="/static/logo.svg">
+            <img class="mx-auto" src="/static/logo.svg">
+        </picture>
         <span class="w-full my-1 flex grid grid-cols-1 text-2xl place-items-center border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl">
-            <h1>About</h1>
+            <h1>CollectionDB</h1>
         </span>
         <div class="w-fit h-fit flex grid grid-cols-2 gap-2 px-2 border-2 border-gray-300 rounded-xl">
             <div>
                 <div class="py-1">
-                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">CollectionDB</span>
+                    <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Version</span>
                 </div>
                 <div class="py-1">
                     <span class="text-l border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Operating System</span>
@@ -44,5 +49,6 @@
             <a href="https://github.com/Mega-Cookie/collectionDB">GitHub</a>
         </span>
     </div>
+</div>
 </div>
 {{template "footer.html"}}
