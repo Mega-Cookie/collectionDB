@@ -9,6 +9,7 @@ A simple webapp for managing your collections of physical media written in Go wi
 ### Configure
 
 The `config.yml` contains basic configuration options:
+
 ```
 {
 "listen":     "127.0.0.1:8080", ### Listening Adress and Port
@@ -22,6 +23,9 @@ The `config.yml` contains basic configuration options:
 "key":        "" ### Location of the SSL key
 }
 ```
+
+Restart collectionDB after editing config.yml
+
 ### From Source
 
 1. `go build main.go`
