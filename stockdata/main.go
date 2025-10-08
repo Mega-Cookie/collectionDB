@@ -85,7 +85,7 @@ func CreateType(db *sql.DB) gin.HandlerFunc {
 func DeleteType(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM mediatypes WHERE typeID = ?`, id)
+		_, err := db.Exec(`DELETE FROM mediatypes WHERE mediatypeID = ?`, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete mediatype"})
 			fmt.Println(err)
