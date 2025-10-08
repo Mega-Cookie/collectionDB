@@ -19,34 +19,11 @@ var db *sql.DB
 
 func setStockData() {
 	var err error
-	_, err = db.Exec(`INSERT OR IGNORE INTO mediatypes (NAME, STOCK)
-		VALUES
-		('CD', '1'),
-		('BlueRay', '1'),
-		('DVD', '1'),
-		('Manga', '1'),
-		('Comic', '1'),
-		('Book', '1');`)
-	if err != nil {
-		log.Fatal(err)
-	}
 	_, err = db.Exec(`INSERT OR IGNORE INTO categories (NAME, STOCK)
 		VALUES
 		('Movie', '1'),
 		('TV-Series', '1'),
-		('Music', '1'),
-		('Literature', '1');`)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = db.Exec(`INSERT OR IGNORE INTO genres (NAME, STOCK)
-		VALUES
-		('Fantasy', '1'),
-		('Romance', '1'),
-		('Action', '1'),
-		('Science Fiction', '1'),
-		('Musical', '1'),
-		('Horror', '1');`)
+		('Music', '1');`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,20 +36,29 @@ func initDB(databasefile string) {
 		log.Fatal(err)
 	}
 	createTableQuery := `CREATE TABLE IF NOT EXISTS mediatypes (
-		typeID INTEGER PRIMARY KEY AUTOINCREMENT,
+		mediatypeID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE,
-		STOCK BOOL NOT NULL DEFAULT 0,
+		STOCK BOOLEAN NOT NULL DEFAULT 0,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	createTableQuery = `CREATE TABLE IF NOT EXISTS casetypes (
+		casetypeID INTEGER PRIMARY KEY AUTOINCREMENT,
+		NAME STRING UNIQUE,
+		STOCK BOOLEAN NOT NULL DEFAULT 0,
+		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
 	createTableQuery = `CREATE TABLE IF NOT EXISTS genres (
 		genreID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE,
-		STOCK BOOL NOT NULL DEFAULT 0,
+		STOCK BOOLEAN NOT NULL DEFAULT 0,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(createTableQuery)
@@ -82,20 +68,19 @@ func initDB(databasefile string) {
 	createTableQuery = `CREATE TABLE IF NOT EXISTS categories (
 		categoryID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE,
-		STOCK BOOL NOT NULL DEFAULT 0,
+		STOCK BOOLEAN NOT NULL DEFAULT 0,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		log.Fatal(err)
 	}
-	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stocktype
-		BEFORE DELETE ON mediatypes
-		WHEN OLD.STOCK = 1
-		BEGIN
-    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
-		END
-		;`
+	createTableQuery = `CREATE TABLE IF NOT EXISTS publishers (
+		publisherID INTEGER PRIMARY KEY AUTOINCREMENT,
+		NAME STRING UNIQUE,
+		STOCK BOOLEAN NOT NULL DEFAULT 0,
+		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		log.Fatal(err)
@@ -111,31 +96,33 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stockgenre
-		BEFORE DELETE ON genres
-		WHEN OLD.STOCK = 1
-		BEGIN
-    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
-		END
-		;`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
 	createTableQuery = `CREATE TABLE IF NOT EXISTS entries (
 		entryID INTEGER PRIMARY KEY AUTOINCREMENT,
 		TITLE TEXT NOT NULL,
 		YEAR INTEGER NOT NULL,
 		PLOT TEXT NOT NULL,
-		IS_DIGITAL BOOL NOT NULL DEFAULT 0,
+		COMMENT TEXT,
+		AUDIOLANGS TEXT,
+		SUBTITLELANGS TEXT,
+		RELEASED DATE NOT NULL,
+		IS_DIGITAL BOOLEAN NOT NULL DEFAULT 0,
 		collectionID INTEGER DEFAULT NULL,
 		genreID INTEGER DEFAULT NULL,
-		typeID INTEGER DEFAULT NULL,
+		mediatypeID INTEGER DEFAULT NULL,
+		MEDIACOUNT INTEGER NOT NULL DEFAULT 1,
+		IS_BOOKLET BOOLEAN NOT NULL DEFAULT 0,
+		casetypeID INTEGER DEFAULT NULL,
+		publisherID INTEGER DEFAULT NULL,
+		REGIONCODE INTEGER,
+		BARCODE INTEGER,
+		IMDB TEXT,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(collectionID) REFERENCES collections(collectionID),
 		FOREIGN KEY(genreID) REFERENCES genres(genreID),
-		FOREIGN KEY(typeID) REFERENCES mediatypes(typeID)
+		FOREIGN KEY(mediatypeID) REFERENCES mediatypes(mediatypeID),
+		FOREIGN KEY(casetypeID) REFERENCES mediatypes(casetypeID),
+		FOREIGN KEY(publisherID) REFERENCES publishers(publisherID)
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
