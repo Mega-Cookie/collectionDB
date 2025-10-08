@@ -4,6 +4,10 @@
 
 A simple webapp for managing your collections of physical media written in Go with SQLite.
 
+**WARNING**
+
+collectionDB is in early Alpha stage. Only use it for testing!!
+
 ## Usage
 
 ### Configure
@@ -26,6 +30,8 @@ The `config.yml` contains basic configuration options:
 
 Restart collectionDB after editing config.yml
 
+## Install
+
 ### From Source
 
 1. `go build main.go`
@@ -38,3 +44,9 @@ Restart collectionDB after editing config.yml
 2. `sudo dnf install collectionDB-<VERSION>.rpm`
 3. edit `config.yml` under `/etc/collectionDB/config.yml`
 4. `sudo systemctl start collectionDB.service`
+
+## Update
+
+**WARNING**
+
+There is no database migration yet!! Changes in the database schema are always breaking changes!!
