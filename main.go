@@ -22,8 +22,7 @@ func setStockData() {
 	_, err = db.Exec(`INSERT OR IGNORE INTO categories (NAME, STOCK)
 		VALUES
 		('Movie', '1'),
-		('TV-Series', '1'),
-		('Music', '1');`)
+		('TV-Series', '1');`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,6 +74,21 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	createTableQuery = `CREATE TABLE IF NOT EXISTS imdb (
+		imdbID TEXT PRIMARY KEY,
+		RATING FLOAT NOT NULL,
+		TITLE STRING UNIQUE,
+		YEAR INTEGER NOT NULL,
+		TAGLINE TEXT NOT NULL,
+		PLOT TEXT NOT NULL,
+		STOCK BOOLEAN NOT NULL DEFAULT 0,
+		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
+		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
 	createTableQuery = `CREATE TABLE IF NOT EXISTS publishers (
 		publisherID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE,
@@ -115,14 +129,15 @@ func initDB(databasefile string) {
 		publisherID INTEGER DEFAULT NULL,
 		REGIONCODE INTEGER,
 		BARCODE INTEGER,
-		IMDB TEXT,
+		imdbID TEXT,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(collectionID) REFERENCES collections(collectionID),
 		FOREIGN KEY(genreID) REFERENCES genres(genreID),
 		FOREIGN KEY(mediatypeID) REFERENCES mediatypes(mediatypeID),
 		FOREIGN KEY(casetypeID) REFERENCES casetypes(casetypeID),
-		FOREIGN KEY(publisherID) REFERENCES publishers(publisherID)
+		FOREIGN KEY(publisherID) REFERENCES publishers(publisherID),
+		FOREIGN KEY(imdbID) REFERENCES imdb(imdbID)
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
