@@ -13,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/tanimutomo/sqlfile"
 )
 
 var db *sql.DB
@@ -179,6 +180,57 @@ func ShowList(db *sql.DB) gin.HandlerFunc {
 		})
 	}
 }
+func initdb2(databasefile string) {
+	var err error
+	database, _ := filepath.Abs(databasefile)
+	db, err = sql.Open("sqlite3", database)
+	if err != nil {
+		log.Fatal(err)
+	}
+	schema := sqlfile.New()
+	err = schema.Directory("db")
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	_, err = schema.Exec(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+	createTableQuery := `CREATE TRIGGER IF NOT EXISTS abort_delete_stocktype
+		BEFORE DELETE ON mediatypes
+		WHEN OLD.STOCK = 1
+		BEGIN
+    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
+		END
+		;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stockcat
+		BEFORE DELETE ON categories
+		WHEN OLD.STOCK = 1
+		BEGIN
+    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
+		END
+		;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stockgenre
+		BEFORE DELETE ON genres
+		WHEN OLD.STOCK = 1
+		BEGIN
+    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
+		END
+		;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 func ShowStockList(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		mediatypes := stockdata.ListMediatypes(db)
@@ -201,7 +253,7 @@ func ShowAbout(db *sql.DB) gin.HandlerFunc {
 }
 func main() {
 	config := small.Configure()
-	initDB(config.Database)
+	initdb2(config.Database)
 	setStockData()
 	if !config.IsDebug {
 		gin.SetMode(gin.ReleaseMode)
