@@ -243,9 +243,9 @@ func main() {
 		}
 	} else {
 		router.UseH2C = true
+		log.Printf("Server is running on http://%s", config.Listen)
 		if err := router.Run(config.Listen); err != nil {
 			log.Fatalf("Error starting server: %s", err)
 		}
-		log.Printf("Server is running on https://%s", config.TLSListen)
 	}
 }
