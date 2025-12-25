@@ -52,124 +52,6 @@ func setStockData() {
 		log.Fatal(err)
 	}
 }
-func initDB(databasefile string) {
-	var err error
-	database, _ := filepath.Abs(databasefile)
-	db, err = sql.Open("sqlite3", database)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery := `CREATE TABLE IF NOT EXISTS mediatypes (
-		typeID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE,
-		STOCK BOOL NOT NULL DEFAULT 0,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	createTableQuery = `CREATE TABLE IF NOT EXISTS genres (
-		genreID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE,
-		STOCK BOOL NOT NULL DEFAULT 0,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS categories (
-		categoryID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE,
-		STOCK BOOL NOT NULL DEFAULT 0,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stocktype
-		BEFORE DELETE ON mediatypes
-		WHEN OLD.STOCK = 1
-		BEGIN
-    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
-		END
-		;`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stockcat
-		BEFORE DELETE ON categories
-		WHEN OLD.STOCK = 1
-		BEGIN
-    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
-		END
-		;`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stockgenre
-		BEFORE DELETE ON genres
-		WHEN OLD.STOCK = 1
-		BEGIN
-    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
-		END
-		;`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS entries (
-		entryID INTEGER PRIMARY KEY AUTOINCREMENT,
-		TITLE TEXT NOT NULL,
-		YEAR INTEGER NOT NULL,
-		PLOT TEXT NOT NULL,
-		IS_DIGITAL BOOL NOT NULL DEFAULT 0,
-		collectionID INTEGER DEFAULT NULL,
-		genreID INTEGER DEFAULT NULL,
-		typeID INTEGER DEFAULT NULL,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY(collectionID) REFERENCES collections(collectionID),
-		FOREIGN KEY(genreID) REFERENCES genres(genreID),
-		FOREIGN KEY(typeID) REFERENCES mediatypes(typeID)
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS collections (
-		collectionID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME TEXT UNIQUE,
-		DESCRIPTION TEXT,
-		categoryID INTEGER DEFAULT NULL,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY(categoryID) REFERENCES categories(categoryID)
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS info (
-		instanceID INTEGER PRIMARY KEY,
-		VERSION STRING,
-		HOSTNAME STRING UNIQUE,
-		OS STRING,
-		ARCH STRING,
-		GOVERSION STRING,
-		SQLITEVERSION STRING,
-		TIMEZONE STRING
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 func ShowList(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		collections := collect.ListCollections(db)
@@ -180,7 +62,7 @@ func ShowList(db *sql.DB) gin.HandlerFunc {
 		})
 	}
 }
-func initdb2(databasefile string) {
+func initDB(databasefile string) {
 	var err error
 	database, _ := filepath.Abs(databasefile)
 	db, err = sql.Open("sqlite3", database)
@@ -253,7 +135,7 @@ func ShowAbout(db *sql.DB) gin.HandlerFunc {
 }
 func main() {
 	config := small.Configure()
-	initdb2(config.Database)
+	initDB(config.Database)
 	setStockData()
 	if !config.IsDebug {
 		gin.SetMode(gin.ReleaseMode)
