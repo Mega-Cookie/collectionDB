@@ -1,16 +1,16 @@
-Name:           collectionDB
-Version:        0.0.2alpha3
-Release:        1%{?dist}
-Summary:        A simple webapp for managing your collections of physical media written in Go with SQLite.
+Name:       collectionDB
+Version:    0.0.2alpha3
+Release:    1%{?dist}
+Summary:    A simple web app for managing your collections of physical media.
 
-License:        GPLv3
-URL:            https://github.com/Mega-Cookie/collectionDB
-Source0:        collectionDB-0.0.2alpha3.tar.gz
+License:    GPLv3
+URL:        https://github.com/Mega-Cookie/collectionDB
+Source0:    collectionDB-0.0.2alpha3.tar.gz
 
 BuildRequires:  golang
-BuildRequires:	systemd-rpm-macros
+BuildRequires:  systemd-rpm-macros
 
-Provides:	%{name}-%{version}
+Provides:   %{name}-%{version}
 
 %description
 A simple webapp for managing your collections of physical media written in Go with SQLite.

@@ -13,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/tanimutomo/sqlfile"
 )
 
 var db *sql.DB
@@ -51,6 +52,16 @@ func setStockData() {
 		log.Fatal(err)
 	}
 }
+func ShowList(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		collections := collect.ListCollections(db)
+		entries := entries.ListEntries(db)
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"Entries":     entries,
+			"Collections": collections,
+		})
+	}
+}
 func initDB(databasefile string) {
 	var err error
 	database, _ := filepath.Abs(databasefile)
@@ -58,38 +69,17 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	createTableQuery := `CREATE TABLE IF NOT EXISTS mediatypes (
-		typeID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE,
-		STOCK BOOL NOT NULL DEFAULT 0,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
-	_, err = db.Exec(createTableQuery)
+	schema := sqlfile.New()
+	err = schema.Directory("db")
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	_, err = schema.Exec(db)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	createTableQuery = `CREATE TABLE IF NOT EXISTS genres (
-		genreID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE,
-		STOCK BOOL NOT NULL DEFAULT 0,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS categories (
-		categoryID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE,
-		STOCK BOOL NOT NULL DEFAULT 0,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stocktype
+	createTableQuery := `CREATE TRIGGER IF NOT EXISTS abort_delete_stocktype
 		BEFORE DELETE ON mediatypes
 		WHEN OLD.STOCK = 1
 		BEGIN
@@ -121,62 +111,6 @@ func initDB(databasefile string) {
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS entries (
-		entryID INTEGER PRIMARY KEY AUTOINCREMENT,
-		TITLE TEXT NOT NULL,
-		YEAR INTEGER NOT NULL,
-		PLOT TEXT NOT NULL,
-		IS_DIGITAL BOOL NOT NULL DEFAULT 0,
-		collectionID INTEGER DEFAULT NULL,
-		genreID INTEGER DEFAULT NULL,
-		typeID INTEGER DEFAULT NULL,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY(collectionID) REFERENCES collections(collectionID),
-		FOREIGN KEY(genreID) REFERENCES genres(genreID),
-		FOREIGN KEY(typeID) REFERENCES mediatypes(typeID)
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS collections (
-		collectionID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME TEXT UNIQUE,
-		DESCRIPTION TEXT,
-		categoryID INTEGER DEFAULT NULL,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY(categoryID) REFERENCES categories(categoryID)
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS info (
-		instanceID INTEGER PRIMARY KEY,
-		VERSION STRING,
-		HOSTNAME STRING UNIQUE,
-		OS STRING,
-		ARCH STRING,
-		GOVERSION STRING,
-		SQLITEVERSION STRING,
-		TIMEZONE STRING
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-func ShowList(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		collections := collect.ListCollections(db)
-		entries := entries.ListEntries(db)
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"Entries":     entries,
-			"Collections": collections,
-		})
 	}
 }
 func ShowStockList(db *sql.DB) gin.HandlerFunc {
@@ -243,9 +177,9 @@ func main() {
 		}
 	} else {
 		router.UseH2C = true
+		log.Printf("Server is running on http://%s", config.Listen)
 		if err := router.Run(config.Listen); err != nil {
 			log.Fatalf("Error starting server: %s", err)
 		}
-		log.Printf("Server is running on https://%s", config.TLSListen)
 	}
 }
