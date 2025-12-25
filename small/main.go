@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"runtime"
@@ -68,7 +67,7 @@ func Configure() (config config) {
 func SetSystemInfo(db *sql.DB) {
 	file, err := os.Open("/etc/collectionDB/VERSION")
 	if err != nil {
-		fmt.Println("No VERSION file in /etc/collectionDB/ assuming VERSION file in root directory")
+		log.Println("No VERSION file in /etc/collectionDB/ assuming VERSION file in root directory")
 		file, err = os.Open("VERSION")
 		if err != nil {
 			log.Fatalf("failed to open file: %s", err)
@@ -107,12 +106,12 @@ func SetTime(db *sql.DB, stamp *time.Time) (newstamp time.Time) {
 	query := "SELECT TIMEZONE FROM info WHERE instanceID = 1"
 	err := db.QueryRow(query).Scan(&zone)
 	if err != nil {
-		fmt.Println("error: Failed to get timezone")
+		log.Println("error: Failed to get timezone")
 		return
 	}
 	location, err = time.LoadLocation(zone)
 	if err != nil {
-		fmt.Println("error: Failed to set timezone")
+		log.Println("error: Failed to set timezone")
 		return
 	}
 	newstamp = stamp.In(location)
