@@ -29,9 +29,18 @@ type Entry struct {
 		ID   int    `json:"genreid"`
 		Name string `json:"genrename"`
 	}
-	IsDigital bool      `json:"is_digital"`
-	CreatedAt time.Time `json:"created_at"`
-	EditedAt  time.Time `json:"edited_at"`
+	IsDigital  bool      `json:"is_digital"`
+	IsBooklet  bool      `json:"is_booklet"`
+	MediaCount int       `json:"media_count"`
+	Released   time.Time `json:"release_date"`
+	Comment    string    `json:"comment"`
+	AudioLangs string    `json:"audio_langs"`
+	SubLangs   string    `json:"sub_langs"`
+	RegionCode string    `json:"region_code"`
+	BarCode    string    `json:"bar_code"`
+	Imdb       string    `json:"imdbid"`
+	CreatedAt  time.Time `json:"created_at"`
+	EditedAt   time.Time `json:"edited_at"`
 }
 
 func ListEntries(db *sql.DB) (entries []Entry) {
@@ -43,7 +52,7 @@ func ListEntries(db *sql.DB) (entries []Entry) {
 	defer rows.Close()
 	for rows.Next() {
 		var entry Entry
-		rows.Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.IsDigital, &entry.Collection.ID, &entry.Genre.ID, &entry.Type.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.Type.Name)
+		rows.Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.Comment, &entry.AudioLangs, &entry.SubLangs, &entry.IsDigital, &entry.Released, &entry.Collection.ID, &entry.Genre.ID, &entry.Type.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.Type.Name)
 		entries = append(entries, entry)
 	}
 	return
@@ -70,7 +79,21 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 		year := c.PostForm("year")
 		collid := c.PostForm("collid")
 		isdigital := c.PostForm("is_digital") == "on"
-		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, mediatypeID, collectionID, genreID, IS_DIGITAL) VALUES (?, ?, ?, ?, ?, ?, ?)`, title, year, plot, typeid, collid, genreid, isdigital)
+		isbooklet := c.PostForm("is_booklet") == "on"
+		released := c.PostForm("release_date")
+		comment := c.PostForm("comment")
+		regioncode := c.PostForm("region_code")
+		barcode := c.PostForm("bar_code")
+		imdbid := c.PostForm("imdbid")
+
+		_, err := db.Exec(`INSERT IGNORE INTO imdb (imdbID) VALUES (?)`, imdbid)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to POST imdbID"})
+			fmt.Println(err)
+			return
+		}
+
+		_, err = db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, mediatypeID, collectionID, genreID, IS_DIGITAL, IS_BOOKLET, MEDIARELEASEDATE, COMMENT, REGIONCODE, BARCODE, imdbID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, title, year, plot, typeid, collid, genreid, isdigital, isbooklet, released, comment, regioncode, barcode, imdbid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
 			fmt.Println(err)
@@ -87,7 +110,7 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.mediatypeID = t.mediatypeID WHERE e.entryID = ?"
 		err := db.QueryRow(query, id).Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.IsDigital, &entry.Collection.ID, &entry.Genre.ID, &entry.Type.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.Type.Name)
 		if err != nil {
-			c.HTML(http.StatusNotFound, "404.html", nil)
+			c.HTML(http.StatusNotFound, "entries/404.html", nil)
 			fmt.Println(err)
 			return
 		}
@@ -133,7 +156,7 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.mediatypeID = t.mediatypeID WHERE e.entryID = ?"
 		err := db.QueryRow(query, id).Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.IsDigital, &entry.Collection.ID, &entry.Genre.ID, &entry.Type.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.Type.Name)
 		if err != nil {
-			c.HTML(http.StatusNotFound, "404.html", nil)
+			c.HTML(http.StatusNotFound, "entries/404.html", nil)
 			fmt.Println(err)
 			return
 		}
