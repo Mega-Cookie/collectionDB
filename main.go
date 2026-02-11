@@ -74,6 +74,19 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	createTableQuery = `CREATE TABLE IF NOT EXISTS collections (
+		collectionID INTEGER PRIMARY KEY AUTOINCREMENT,
+		NAME TEXT UNIQUE,
+		DESCRIPTION TEXT,
+		categoryID INTEGER DEFAULT NULL,
+		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
+		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY(categoryID) REFERENCES categories(categoryID)
+	);`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
 	createTableQuery = `CREATE TABLE IF NOT EXISTS imdb (
 		imdbID TEXT PRIMARY KEY,
 		RATING FLOAT,
@@ -137,19 +150,6 @@ func initDB(databasefile string) {
 		FOREIGN KEY(casetypeID) REFERENCES casetypes(casetypeID),
 		FOREIGN KEY(publisherID) REFERENCES publishers(publisherID),
 		FOREIGN KEY(imdbID) REFERENCES imdb(imdbID)
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS collections (
-		collectionID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME TEXT UNIQUE,
-		DESCRIPTION TEXT,
-		categoryID INTEGER DEFAULT NULL,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY(categoryID) REFERENCES categories(categoryID)
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
