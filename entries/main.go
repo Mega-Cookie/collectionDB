@@ -35,7 +35,7 @@ type Entry struct {
 }
 
 func ListEntries(db *sql.DB) (entries []Entry) {
-	rows, err := db.Query("SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.typeID = t.typeID GROUP BY e.entryID")
+	rows, err := db.Query("SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.mediatypeID = t.mediatypeID GROUP BY e.entryID")
 	if err != nil {
 		fmt.Println("error: Failed to retrieve entries")
 		fmt.Println(err)
@@ -70,7 +70,7 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 		year := c.PostForm("year")
 		collid := c.PostForm("collid")
 		isdigital := c.PostForm("is_digital") == "on"
-		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, typeID, collectionID, genreID, IS_DIGITAL) VALUES (?, ?, ?, ?, ?, ?, ?)`, title, year, plot, typeid, collid, genreid, isdigital)
+		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, mediatypeID, collectionID, genreID, IS_DIGITAL) VALUES (?, ?, ?, ?, ?, ?, ?)`, title, year, plot, typeid, collid, genreid, isdigital)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
 			fmt.Println(err)
@@ -84,7 +84,7 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
-		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.typeID = t.typeID WHERE e.entryID = ?"
+		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.mediatypeID = t.mediatypeID WHERE e.entryID = ?"
 		err := db.QueryRow(query, id).Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.IsDigital, &entry.Collection.ID, &entry.Genre.ID, &entry.Type.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.Type.Name)
 		if err != nil {
 			c.HTML(http.StatusNotFound, "404.html", nil)
@@ -115,7 +115,7 @@ func EditEntry(db *sql.DB) gin.HandlerFunc {
 		collid := c.PostForm("collid")
 		isdigital := c.PostForm("is_digital") == "on"
 		id := c.Param("id")
-		updateTableQuery := `UPDATE entries SET TITLE = ?, YEAR = ?, PLOT = ?, typeID = ?, genreID = ?, IS_DIGITAL = ?, collectionID = ?, EDITED_AT = CURRENT_TIMESTAMP where entryID = ?`
+		updateTableQuery := `UPDATE entries SET TITLE = ?, YEAR = ?, PLOT = ?, mediatypeID = ?, genreID = ?, IS_DIGITAL = ?, collectionID = ?, EDITED_AT = CURRENT_TIMESTAMP where entryID = ?`
 		_, err := db.Exec(updateTableQuery, title, year, plot, typeid, genreid, isdigital, collid, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit entry"})
@@ -130,7 +130,7 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
-		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.typeID = t.typeID WHERE e.entryID = ?"
+		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, t.NAME AS TYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes t ON e.mediatypeID = t.mediatypeID WHERE e.entryID = ?"
 		err := db.QueryRow(query, id).Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.IsDigital, &entry.Collection.ID, &entry.Genre.ID, &entry.Type.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.Type.Name)
 		if err != nil {
 			c.HTML(http.StatusNotFound, "404.html", nil)
