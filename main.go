@@ -13,7 +13,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/tanimutomo/sqlfile"
 )
 
 var db *sql.DB
@@ -26,16 +25,6 @@ func setStockData() {
 		('TV-Series', '1');`)
 	if err != nil {
 		log.Fatal(err)
-	}
-}
-func ShowList(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		collections := collect.ListCollections(db)
-		entries := entries.ListEntries(db)
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"Entries":     entries,
-			"Collections": collections,
-		})
 	}
 }
 func initDB(databasefile string) {
