@@ -111,17 +111,6 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stockcat
-		BEFORE DELETE ON categories
-		WHEN OLD.STOCK = 1
-		BEGIN
-    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
-		END
-		;`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
 	createTableQuery = `CREATE TABLE IF NOT EXISTS entries (
 		entryID INTEGER PRIMARY KEY AUTOINCREMENT,
 		TITLE TEXT NOT NULL,
