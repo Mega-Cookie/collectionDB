@@ -23,10 +23,10 @@
             <div>
               <label for="mediatypes" class="text-lg mr-2">Type of physical media:</label>
               <select id="typeid" name="typeid" class="mr-2">
-                {{range .Mediatypes}}
+                {{range .MediaTypes}}
                 <option value="{{.ID}}">{{.Name}}</option>
                 {{end}}
-                <option value="{{.Entry.Type.ID}}" selected hidden>{{.Entry.Type.Name}}</option>
+                <option value="{{.Entry.MediaType.ID}}" selected hidden>{{.Entry.MediaType.Name}}</option>
               </select>
             </div>
             <div>
