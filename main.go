@@ -20,9 +20,23 @@ var db *sql.DB
 func setStockData() {
 	var err error
 	_, err = db.Exec(`INSERT OR IGNORE INTO categories (NAME, STOCK)
-		VALUES
-		('Movie', '1'),
-		('TV-Series', '1');`)
+					VALUES
+					('No Category', '1');
+					INSERT OR IGNORE INTO genres (NAME, STOCK)
+					VALUES
+					('No Genre', '1');
+					INSERT OR IGNORE INTO publishers (NAME, STOCK)
+					VALUES
+					('No Publisher', '1');
+					INSERT OR IGNORE INTO casetypes (NAME, STOCK)
+					VALUES
+					('Jewelcase', '1');
+					INSERT OR IGNORE INTO mediatypes (NAME, STOCK)
+					VALUES
+					('DVD', '1');
+					INSERT OR IGNORE INTO collections (NAME, DESCRIPTION)
+					VALUES
+					('Default', 'This is the default collection if no other collection is selected');`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,7 +92,7 @@ func initDB(databasefile string) {
 		collectionID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME TEXT UNIQUE,
 		DESCRIPTION TEXT,
-		categoryID INTEGER DEFAULT NULL,
+		categoryID INTEGER NOT NULL DEFAULT 1,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(categoryID) REFERENCES categories(categoryID)
@@ -111,37 +125,26 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	createTableQuery = `CREATE TRIGGER IF NOT EXISTS abort_delete_stockcat
-		BEFORE DELETE ON categories
-		WHEN OLD.STOCK = 1
-		BEGIN
-    		SELECT RAISE(ABORT, 'You can''t delete system stock data');
-		END
-		;`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
 	createTableQuery = `CREATE TABLE IF NOT EXISTS entries (
 		entryID INTEGER PRIMARY KEY AUTOINCREMENT,
 		TITLE TEXT NOT NULL,
 		YEAR INTEGER NOT NULL,
-		PLOT TEXT NOT NULL,
-		COMMENT TEXT,
-		AUDIOLANGS TEXT,
-		SUBTITLELANGS TEXT,
-		RELEASED DATE NOT NULL,
-		IS_DIGITAL BOOLEAN NOT NULL DEFAULT 0,
-		collectionID INTEGER DEFAULT NULL,
-		genreID INTEGER DEFAULT NULL,
-		mediatypeID INTEGER DEFAULT NULL,
+		PLOT TEXT NOT NULL DEFAULT '-',
+		COMMENT TEXT NOT NULL DEFAULT '-',
+		AUDIOLANGS TEXT NOT NULL DEFAULT 'en',
+		SUBTITLELANGS TEXT NOT NULL DEFAULT 'de',
+		MEDIARELEASEDATE TEXT DEFAULT '0000-01-01',
 		MEDIACOUNT INTEGER NOT NULL DEFAULT 1,
+		IS_DIGITAL BOOLEAN NOT NULL DEFAULT 0,
 		IS_BOOKLET BOOLEAN NOT NULL DEFAULT 0,
-		casetypeID INTEGER DEFAULT NULL,
-		publisherID INTEGER DEFAULT NULL,
-		REGIONCODE INTEGER,
-		BARCODE INTEGER,
-		imdbID TEXT,
+		REGIONCODE INTEGER NOT NULL DEFAULT 2,
+		BARCODE TEXT NOT NULL DEFAULT '000000000',
+		collectionID INTEGER NOT NULL DEFAULT 1,
+		genreID INTEGER NOT NULL DEFAULT 1,
+		mediatypeID INTEGER NOT NULL DEFAULT 1,
+		casetypeID INTEGER NOT NULL DEFAULT 1,
+		publisherID INTEGER NOT NULL DEFAULT 1,
+		imdbID TEXT NOT NULL DEFAULT 'tt0',
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(collectionID) REFERENCES collections(collectionID),
@@ -182,13 +185,17 @@ func ShowList(db *sql.DB) gin.HandlerFunc {
 }
 func ShowStockList(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		mediatypes := stockdata.ListMediatypes(db)
+		mediatypes := stockdata.ListMediaTypes(db)
 		categories := stockdata.ListCategories(db)
 		genres := stockdata.ListGenres(db)
+		casetypes := stockdata.ListCaseTypes(db)
+		publishers := stockdata.ListPublishers(db)
 		c.HTML(http.StatusOK, "stock/index.html", gin.H{
-			"Mediatypes": mediatypes,
+			"MediaTypes": mediatypes,
 			"Categories": categories,
 			"Genres":     genres,
+			"CaseTypes":  casetypes,
+			"Publishers": publishers,
 		})
 	}
 }
@@ -218,10 +225,14 @@ func main() {
 	router.GET("/", ShowList(db))
 	router.GET("/stock", ShowStockList(db))
 	router.GET("/about", ShowAbout(db))
-	router.POST("/stock/mediatype/create", stockdata.CreateType(db))
+	router.POST("/stock/mediatype/create", stockdata.CreateMediaType(db))
+	router.POST("/stock/casetype/create", stockdata.CreateCaseType(db))
+	router.POST("/stock/publisher/create", stockdata.CreatePublisher(db))
 	router.POST("/stock/category/create", stockdata.CreateCategory(db))
 	router.POST("/stock/genre/create", stockdata.CreateGenre(db))
-	router.POST("/stock/mediatype/:id/delete", stockdata.DeleteType(db))
+	router.POST("/stock/mediatype/:id/delete", stockdata.DeleteMediaType(db))
+	router.POST("/stock/casetype/:id/delete", stockdata.DeleteCaseType(db))
+	router.POST("/stock/publisher/:id/delete", stockdata.DeletePublisher(db))
 	router.POST("/stock/category/:id/delete", stockdata.DeleteCategory(db))
 	router.POST("/stock/genre/:id/delete", stockdata.DeleteGenre(db))
 	router.GET("/entries/:id", entries.ViewEntry(db))
