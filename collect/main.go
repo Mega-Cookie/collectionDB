@@ -69,7 +69,7 @@ func ShowEditCollectionPage(db *sql.DB) gin.HandlerFunc {
 		query := "SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID WHERE c.collectionID = ?"
 		err := db.QueryRow(query, id).Scan(&collection.ID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Entrycount, &collection.Category.Name)
 		if err != nil {
-			c.HTML(http.StatusNotFound, "404.html", nil)
+			c.HTML(http.StatusNotFound, "collections/404.html", nil)
 			fmt.Println(err)
 			return
 		}
@@ -107,7 +107,7 @@ func ViewCollection(db *sql.DB) gin.HandlerFunc {
 		query := "SELECT c.*, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID WHERE c.collectionID = ?"
 		err := db.QueryRow(query, id).Scan(&collection.ID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Category.Name)
 		if err != nil {
-			c.HTML(http.StatusNotFound, "404.html", nil)
+			c.HTML(http.StatusNotFound, "collections/404.html", nil)
 			fmt.Println(err)
 			return
 		}

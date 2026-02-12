@@ -119,18 +119,18 @@ func initDB(databasefile string) {
 		COMMENT TEXT,
 		AUDIOLANGS TEXT,
 		SUBTITLELANGS TEXT,
-		RELEASED DATE NOT NULL,
+		MEDIARELEASEDATE TEXT DEFAULT '0000-01-01',
+		MEDIACOUNT INTEGER NOT NULL DEFAULT 1,
 		IS_DIGITAL BOOLEAN NOT NULL DEFAULT 0,
+		IS_BOOKLET BOOLEAN NOT NULL DEFAULT 0,
+		REGIONCODE INTEGER,
+		BARCODE INTEGER,
 		collectionID INTEGER DEFAULT NULL,
 		genreID INTEGER DEFAULT NULL,
 		mediatypeID INTEGER DEFAULT NULL,
-		MEDIACOUNT INTEGER NOT NULL DEFAULT 1,
-		IS_BOOKLET BOOLEAN NOT NULL DEFAULT 0,
 		casetypeID INTEGER DEFAULT NULL,
 		publisherID INTEGER DEFAULT NULL,
-		REGIONCODE INTEGER,
-		BARCODE INTEGER,
-		imdbID TEXT,
+		imdbID TEXT DEFAULT NULL,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(collectionID) REFERENCES collections(collectionID),
@@ -171,13 +171,17 @@ func ShowList(db *sql.DB) gin.HandlerFunc {
 }
 func ShowStockList(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		mediatypes := stockdata.ListMediatypes(db)
+		mediatypes := stockdata.ListMediaTypes(db)
 		categories := stockdata.ListCategories(db)
 		genres := stockdata.ListGenres(db)
+		casetypes := stockdata.ListCaseTypes(db)
+		publishers := stockdata.ListPublishers(db)
 		c.HTML(http.StatusOK, "stock/index.html", gin.H{
-			"Mediatypes": mediatypes,
+			"MediaTypes": mediatypes,
 			"Categories": categories,
 			"Genres":     genres,
+			"CaseTypes":  casetypes,
+			"Publishers": publishers,
 		})
 	}
 }
@@ -207,10 +211,14 @@ func main() {
 	router.GET("/", ShowList(db))
 	router.GET("/stock", ShowStockList(db))
 	router.GET("/about", ShowAbout(db))
-	router.POST("/stock/mediatype/create", stockdata.CreateType(db))
+	router.POST("/stock/mediatype/create", stockdata.CreateMediaType(db))
+	router.POST("/stock/casetype/create", stockdata.CreateCaseType(db))
+	router.POST("/stock/publisher/create", stockdata.CreatePublisher(db))
 	router.POST("/stock/category/create", stockdata.CreateCategory(db))
 	router.POST("/stock/genre/create", stockdata.CreateGenre(db))
-	router.POST("/stock/mediatype/:id/delete", stockdata.DeleteType(db))
+	router.POST("/stock/mediatype/:id/delete", stockdata.DeleteMediaType(db))
+	router.POST("/stock/casetype/:id/delete", stockdata.DeleteCaseType(db))
+	router.POST("/stock/publisher/:id/delete", stockdata.DeletePublisher(db))
 	router.POST("/stock/category/:id/delete", stockdata.DeleteCategory(db))
 	router.POST("/stock/genre/:id/delete", stockdata.DeleteGenre(db))
 	router.GET("/entries/:id", entries.ViewEntry(db))

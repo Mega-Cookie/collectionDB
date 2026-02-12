@@ -1,12 +1,12 @@
 {{define "stock/index.html"}}
 {{template "header.html"}}
 <div style="margin-left:150px;padding:1px 16px;height:1000px;">
-    <div class="mx-auto p-4 grid grid-cols-3 gap-2 flex">
+    <div class="mx-auto p-4 grid grid-cols-5 gap-2 flex">
       <div class="p-4 border-2 h-fit border-gray-300 rounded-xl">
         <div class="pb-2">
-          <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Mediatypes</span>
+          <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Media Types</span>
         </div>
-        {{range .Mediatypes}}
+        {{range .MediaTypes}}
         <div class="grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
         <div>    
           <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
@@ -27,7 +27,77 @@
         <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
           <div class="w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
           <form action="/stock/mediatype/create" method="POST">
-          <input class="w-full text-s font-bold focus:outline-none" type="text" id="name" name="name" placeholder="Enter Mediatype" required>
+          <input class="w-full text-s font-bold focus:outline-none" type="text" id="name" name="name" placeholder="Enter Media Type" required>
+          </div>
+          <button class="w-fit" type="submit">
+          <a class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">
+          Create
+          </a>
+          </button>
+          </form>
+        </div>
+      </div>
+      <div class="p-4 border-2 h-fit border-gray-300 rounded-xl">
+        <div class="pb-2">
+          <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Publishers</span>
+        </div>
+        {{range .Publishers}}
+        <div class="grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+        <div>    
+          <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
+        </div>
+          {{if not .IsStock}}
+          <div class="w-fit flex py-0.5 justify-self-end ">
+            <form action="/stock/publisher/{{.ID}}/delete" method="POST">
+            <button class="flex h-fit" type="submit">
+            <a class="w-fit flex text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">
+            Delete
+            </a>
+            </button>
+            </form>
+          </div>
+          {{end}}
+        </div>
+        {{end}}
+        <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div class="w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
+          <form action="/stock/publisher/create" method="POST">
+          <input class="w-full text-s font-bold focus:outline-none" type="text" id="name" name="name" placeholder="Enter Publisher" required>
+          </div>
+          <button class="w-fit" type="submit">
+          <a class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">
+          Create
+          </a>
+          </button>
+          </form>
+        </div>
+      </div>
+      <div class="p-4 border-2 h-fit border-gray-300 rounded-xl">
+        <div class="pb-2">
+          <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Case Types</span>
+        </div>
+        {{range .CaseTypes}}
+        <div class="grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+        <div>    
+          <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
+        </div>
+          {{if not .IsStock}}
+          <div class="w-fit flex py-0.5 justify-self-end ">
+            <form action="/stock/casetype/{{.ID}}/delete" method="POST">
+            <button class="flex h-fit" type="submit">
+            <a class="w-fit flex text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">
+            Delete
+            </a>
+            </button>
+            </form>
+          </div>
+          {{end}}
+        </div>
+        {{end}}
+        <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div class="w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
+          <form action="/stock/casetype/create" method="POST">
+          <input class="w-full text-s font-bold focus:outline-none" type="text" id="name" name="name" placeholder="Enter Case Type" required>
           </div>
           <button class="w-fit" type="submit">
           <a class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">

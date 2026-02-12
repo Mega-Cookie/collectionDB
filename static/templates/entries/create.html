@@ -22,13 +22,15 @@
             <input type="number" id="year" name="year" value="2000" required class="border-2 border-blue-800 rounded-md">
             <div>
               <label for="mediatypes" class="text-lg mr-2">Type of physical media:</label>
-              <select id="typeid" name="typeid" class="mr-2" required>
-                {{range .Mediatypes}}
+              <select id="mediatypeid" name="mediatypeid" class="mr-2" required>
+                {{range .MediaTypes}}
                 <option value="{{.ID}}">{{.Name}}</option>
                 {{end}}
-                <option value="0" selected hidden>--Choose Type--</option>
+                <option value="0" selected hidden>--Choose Media Type--</option>
               </select>
             </div>
+            <label for="IMDB" class="text-lg mr-2">Year:</label>
+            <input type="text" id="imdbid" name="imdbid" placeholder="IMDB ID" class="border-2 border-blue-800 rounded-md">
             <div>
               <label for="collection" class="text-lg mr-2">Collection:</label>
               <select id="collid" name="collid" class="mr-2" required>
@@ -47,11 +49,39 @@
                 <option value="0" selected hidden>--Choose Genre--</option>
               </select>
             </div>
-            <label for="is_digital" class="text-lg mr-2">Media is digitized:</label>
-            <input type="checkbox" id="is_digital" name="is_digital" class="mr-2">
+            <div>
+              <label for="bar_code" class="text-lg mr-2">Barcode:</label>
+              <input type="text" id="bar_code" name="bar_code" placeholder="Barcode" class="border-2 border-blue-800 rounded-md">
+            </div>
+            <div>
+              <label for="region_code" class="text-lg mr-2">Regioncode:</label>
+              <input type="text" id="region_code" name="region_code" placeholder="Regioncode" class="border-2 border-blue-800 rounded-md">
+            </div>
+            <div>
+              <label for="release_date" class="text-lg mr-2">Media release date:</label>
+              <input type="date" id="release_date" name="release_date" value="1990-01-01" min="1900-01-01" max="3000-12-31" class="border-2 border-blue-800 rounded-md">
+            </div>
+            <div>
+              <label for="is_digital" class="text-lg mr-2">Media is digitized:</label>
+              <input type="checkbox" id="is_digital" name="is_digital" class="mr-2">
+            </div>
+            <div>
+              <label for="is_booklet" class="text-lg mr-2">Media has booklet:</label>
+              <input type="checkbox" id="is_booklet" name="is_booklet" class="mr-2">
+            </div>
+            <div>
+              <label for="casetypes" class="text-lg mr-2">Type of Case:</label>
+              <select id="casetypeid" name="casetypeid" class="mr-2" required>
+                {{range .Types}}
+                <option value="{{.ID}}">{{.Name}}</option>
+                {{end}}
+                <option value="0" selected hidden>--Choose Case Type--</option>
+              </select>
+            </div>
           </div>
           <div>
             <textarea id="plot" name="plot" rows="5" placeholder="Plot" required class="w-full p-4 text-md border-2 border-blue-800 rounded-md"></textarea>
+            <textarea id="comment" name="comment" rows="3" placeholder="Comment" required class="w-full p-4 text-md border-2 border-blue-800 rounded-md"></textarea>
           </div>
         </div>
       </form>
