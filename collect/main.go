@@ -12,7 +12,7 @@ import (
 )
 
 type Collection struct {
-	ID          int    `json:"id"`
+	ID          int    `json:"collectionID"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Entrycount  int    `json:"entrycount"`
