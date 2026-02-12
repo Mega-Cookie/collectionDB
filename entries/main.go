@@ -33,10 +33,14 @@ type Entry struct {
 		ID   int    `json:"genreid"`
 		Name string `json:"genrename"`
 	}
+	Publisher struct {
+		ID   int    `json:"publisherid"`
+		Name string `json:"publishername"`
+	}
 	IsDigital  bool      `json:"is_digital"`
 	IsBooklet  bool      `json:"is_booklet"`
 	MediaCount int       `json:"media_count"`
-	Released   time.Time `json:"release_date"`
+	Released   string    `json:"release_date"`
 	Comment    string    `json:"comment"`
 	AudioLangs string    `json:"audio_langs"`
 	SubLangs   string    `json:"sub_langs"`
@@ -164,8 +168,8 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
-		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes m ON e.mediatypeID = m.mediatypeID WHERE e.entryID = ?"
-		err := db.QueryRow(query, id).Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.IsDigital, &entry.Collection.ID, &entry.Genre.ID, &entry.MediaType.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.MediaType.Name)
+		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes mt ON e.mediatypeID = mt.mediatypeID WHERE e.entryID = ?"
+		err := db.QueryRow(query, id).Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.Comment, &entry.AudioLangs, &entry.SubLangs, &entry.Released, &entry.MediaCount, &entry.IsDigital, &entry.IsBooklet, &entry.BarCode, &entry.RegionCode, &entry.Collection.ID, &entry.Genre.ID, &entry.MediaType.ID, &entry.CaseType.ID, &entry.Publisher.ID, &entry.Imdb, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.MediaType.Name)
 		if err != nil {
 			c.HTML(http.StatusNotFound, "entries/404.html", nil)
 			fmt.Println(err)
