@@ -13,7 +13,7 @@ import (
 )
 
 type Entry struct {
-	ID        int    `json:"id"`
+	ID        int    `json:"entryID"`
 	Title     string `json:"title"`
 	Plot      string `json:"plot"`
 	Year      int    `json:"year"`
@@ -33,22 +33,34 @@ type Entry struct {
 		ID   int    `json:"genreid"`
 		Name string `json:"genrename"`
 	}
+	Publisher struct {
+		ID   int    `json:"publisherid"`
+		Name string `json:"publishername"`
+	}
 	IsDigital  bool      `json:"is_digital"`
 	IsBooklet  bool      `json:"is_booklet"`
 	MediaCount int       `json:"media_count"`
-	Released   time.Time `json:"release_date"`
+	Released   string    `json:"release_date"`
 	Comment    string    `json:"comment"`
 	AudioLangs string    `json:"audio_langs"`
 	SubLangs   string    `json:"sub_langs"`
 	RegionCode string    `json:"region_code"`
 	BarCode    string    `json:"bar_code"`
-	Imdb       string    `json:"imdbid"`
+	ImdbID     string    `json:"imdbid"`
 	CreatedAt  time.Time `json:"created_at"`
 	EditedAt   time.Time `json:"edited_at"`
 }
 
 func ListEntries(db *sql.DB) (entries []Entry) {
-	rows, err := db.Query("SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME, ct.NAME AS CASETYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes mt ON e.mediatypeID = mt.mediatypeID LEFT OUTER JOIN casetypes ct on e.casetypeID = ct.casetypeID GROUP BY e.entryID")
+	querry := `SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME, ct.NAME AS CASETYPENAME, p.NAME AS PUBNAME
+				FROM entries e
+				LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID
+				LEFT OUTER JOIN genres g ON e.genreID = g.genreID  
+				LEFT OUTER JOIN mediatypes mt ON e.mediatypeID = mt.mediatypeID 
+				LEFT OUTER JOIN casetypes ct on e.casetypeID = ct.casetypeID
+				LEFT OUTER JOIN publishers p ON e.publisherID = p.publisherID 
+				GROUP BY e.entryID`
+	rows, err := db.Query(querry)
 	if err != nil {
 		fmt.Println("error: Failed to retrieve entries")
 		fmt.Println(err)
@@ -56,7 +68,33 @@ func ListEntries(db *sql.DB) (entries []Entry) {
 	defer rows.Close()
 	for rows.Next() {
 		var entry Entry
-		rows.Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.Comment, &entry.AudioLangs, &entry.SubLangs, &entry.IsDigital, &entry.Released, &entry.Collection.ID, &entry.Genre.ID, &entry.MediaType.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.MediaType.Name, &entry.CaseType.Name)
+		rows.Scan(
+			&entry.ID,
+			&entry.Title,
+			&entry.Year,
+			&entry.Plot,
+			&entry.Comment,
+			&entry.AudioLangs,
+			&entry.SubLangs,
+			&entry.Released,
+			&entry.MediaCount,
+			&entry.IsDigital,
+			&entry.IsBooklet,
+			&entry.RegionCode,
+			&entry.BarCode,
+			&entry.Collection.ID,
+			&entry.Genre.ID,
+			&entry.MediaType.ID,
+			&entry.CaseType.ID,
+			&entry.Publisher.ID,
+			&entry.ImdbID,
+			&entry.CreatedAt,
+			&entry.EditedAt,
+			&entry.Collection.Name,
+			&entry.Genre.Name,
+			&entry.MediaType.Name,
+			&entry.CaseType.Name,
+			&entry.Publisher.Name)
 		entries = append(entries, entry)
 	}
 	return
@@ -94,7 +132,7 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 		regioncode := c.PostForm("region_code")
 		barcode := c.PostForm("bar_code")
 		imdbid := c.PostForm("imdbid")
-
+		publisherid := c.PostForm("publisherid")
 		if imdbid != "" {
 			_, err := db.Exec(`INSERT OR IGNORE INTO imdb (imdbID) VALUES (?)`, imdbid)
 			if err != nil {
@@ -103,8 +141,7 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 				return
 			}
 		}
-
-		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, mediatypeID, casetypeID, collectionID, genreID, IS_DIGITAL, IS_BOOKLET, MEDIARELEASEDATE, COMMENT, REGIONCODE, BARCODE, imdbID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, title, year, plot, mediatypeid, casetypeid, collid, genreid, isdigital, isbooklet, released, comment, regioncode, barcode, imdbid)
+		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, mediatypeID, casetypeID, collectionID, genreID, IS_DIGITAL, IS_BOOKLET, MEDIARELEASEDATE, COMMENT, REGIONCODE, BARCODE, imdbID, publisherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, title, year, plot, mediatypeid, casetypeid, collid, genreid, isdigital, isbooklet, released, comment, regioncode, barcode, imdbid, publisherid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
 			fmt.Println(err)
@@ -118,8 +155,41 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
-		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes m ON e.mediatypeID = m.mediatypeID WHERE e.entryID = ?"
-		err := db.QueryRow(query, id).Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.IsDigital, &entry.Collection.ID, &entry.Genre.ID, &entry.MediaType.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.MediaType.Name)
+		query := `SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME, ct.NAME AS CASETYPENAME, p.NAME AS PUBNAME
+				FROM entries e
+				LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID
+				LEFT OUTER JOIN genres g ON e.genreID = g.genreID
+				LEFT OUTER JOIN mediatypes mt ON e.mediatypeID = mt.mediatypeID
+				LEFT OUTER JOIN casetypes ct ON e.casetypeID = ct.casetypeID
+				LEFT OUTER JOIN publishers p ON e.publisherID = p.publisherID
+				WHERE e.entryID = ?`
+		err := db.QueryRow(query, id).Scan(
+			&entry.ID,
+			&entry.Title,
+			&entry.Year,
+			&entry.Plot,
+			&entry.Comment,
+			&entry.AudioLangs,
+			&entry.SubLangs,
+			&entry.Released,
+			&entry.MediaCount,
+			&entry.IsDigital,
+			&entry.IsBooklet,
+			&entry.RegionCode,
+			&entry.BarCode,
+			&entry.Collection.ID,
+			&entry.Genre.ID,
+			&entry.MediaType.ID,
+			&entry.CaseType.ID,
+			&entry.Publisher.ID,
+			&entry.ImdbID,
+			&entry.CreatedAt,
+			&entry.EditedAt,
+			&entry.Collection.Name,
+			&entry.Genre.Name,
+			&entry.MediaType.Name,
+			&entry.CaseType.Name,
+			&entry.Publisher.Name)
 		if err != nil {
 			c.HTML(http.StatusNotFound, "entries/404.html", nil)
 			fmt.Println(err)
@@ -164,8 +234,41 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var entry Entry
-		query := "SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME FROM entries e LEFT OUTER JOIN genres g ON e.genreID = g.genreID LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID LEFT OUTER JOIN mediatypes m ON e.mediatypeID = m.mediatypeID WHERE e.entryID = ?"
-		err := db.QueryRow(query, id).Scan(&entry.ID, &entry.Title, &entry.Year, &entry.Plot, &entry.IsDigital, &entry.Collection.ID, &entry.Genre.ID, &entry.MediaType.ID, &entry.CreatedAt, &entry.EditedAt, &entry.Collection.Name, &entry.Genre.Name, &entry.MediaType.Name)
+		query := `SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME, ct.NAME AS CASETYPENAME, p.NAME AS PUBNAME
+				FROM entries e
+				LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID
+				LEFT OUTER JOIN genres g ON e.genreID = g.genreID
+				LEFT OUTER JOIN mediatypes mt ON e.mediatypeID = mt.mediatypeID
+				LEFT OUTER JOIN casetypes ct ON e.casetypeID = ct.casetypeID
+				LEFT OUTER JOIN publishers p ON e.publisherID = p.publisherID
+				WHERE e.entryID = ?`
+		err := db.QueryRow(query, id).Scan(
+			&entry.ID,
+			&entry.Title,
+			&entry.Year,
+			&entry.Plot,
+			&entry.Comment,
+			&entry.AudioLangs,
+			&entry.SubLangs,
+			&entry.Released,
+			&entry.MediaCount,
+			&entry.IsDigital,
+			&entry.IsBooklet,
+			&entry.RegionCode,
+			&entry.BarCode,
+			&entry.Collection.ID,
+			&entry.Genre.ID,
+			&entry.MediaType.ID,
+			&entry.CaseType.ID,
+			&entry.Publisher.ID,
+			&entry.ImdbID,
+			&entry.CreatedAt,
+			&entry.EditedAt,
+			&entry.Collection.Name,
+			&entry.Genre.Name,
+			&entry.MediaType.Name,
+			&entry.CaseType.Name,
+			&entry.Publisher.Name)
 		if err != nil {
 			c.HTML(http.StatusNotFound, "entries/404.html", nil)
 			fmt.Println(err)
