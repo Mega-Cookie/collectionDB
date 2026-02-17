@@ -72,7 +72,7 @@
             <div>
               <label for="casetypes" class="text-lg mr-2">Type of Case:</label>
               <select id="casetypeid" name="casetypeid" class="mr-2" required>
-                {{range .Types}}
+                {{range .CaseTypes}}
                 <option value="{{.ID}}">{{.Name}}</option>
                 {{end}}
                 <option value="1" selected hidden>--Choose Case Type--</option>
