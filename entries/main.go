@@ -131,6 +131,9 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 		comment := c.PostForm("comment")
 		regioncode := c.PostForm("region_code")
 		barcode := c.PostForm("bar_code")
+		audiolangs := c.PostForm("sublangs")
+		sublangs := c.PostForm("sublangs")
+		mediacount := c.PostForm("mediacount")
 		imdbid := c.PostForm("imdbid")
 		publisherid := c.PostForm("publisherid")
 		if imdbid != "" {
@@ -141,7 +144,7 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 				return
 			}
 		}
-		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, mediatypeID, casetypeID, collectionID, genreID, IS_DIGITAL, IS_BOOKLET, MEDIARELEASEDATE, COMMENT, REGIONCODE, BARCODE, imdbID, publisherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, title, year, plot, mediatypeid, casetypeid, collid, genreid, isdigital, isbooklet, released, comment, regioncode, barcode, imdbid, publisherid)
+		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, mediatypeID, casetypeID, collectionID, genreID, IS_DIGITAL, IS_BOOKLET, MEDIARELEASEDATE, COMMENT, REGIONCODE, BARCODE, imdbID, publisherID, AUDIOLANGS, SUBTITLELANGS, MEDIACOUNT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, title, year, plot, mediatypeid, casetypeid, collid, genreid, isdigital, isbooklet, released, comment, regioncode, barcode, imdbid, publisherid, audiolangs, sublangs, mediacount)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
 			fmt.Println(err)
