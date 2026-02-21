@@ -29,11 +29,11 @@
                 <option value="1" selected hidden>--Choose Media Type--</option>
               </select>
             </div>
-            <label for="IMDB" class="text-lg mr-2">Year:</label>
-            <input type="text" id="imdbid" name="imdbid" placeholder="IMDB ID" required class="border-2 border-blue-800 rounded-md">
+            <label for="IMDB" class="text-lg mr-2">IMDB:</label>
+            <input type="text" id="imdbid" name="imdbid" placeholder="IMDB ID" class="border-2 border-blue-800 rounded-md">
             <div>
               <label for="collection" class="text-lg mr-2">Collection:</label>
-              <select id="collid" name="collid" class="mr-2" required>
+              <select id="collid" name="collid" class="mr-2">
                 {{range .Collections}}
                 <option value="{{.ID}}">{{.Name}}</option>
                 {{end}}
@@ -42,7 +42,7 @@
             </div>
             <div>
               <label for="genres" class="text-lg mr-2">Genre:</label>
-              <select id="genreid" name="genreid" class="mr-2" required>
+              <select id="genreid" name="genreid" class="mr-2">
                 {{range .Genres}}
                 <option value="{{.ID}}">{{.Name}}</option>
                 {{end}}
@@ -51,11 +51,11 @@
             </div>
             <div>
               <label for="bar_code" class="text-lg mr-2">Barcode:</label>
-              <input type="text" id="bar_code" name="bar_code" placeholder="Barcode" required class="border-2 border-blue-800 rounded-md">
+              <input type="text" id="bar_code" name="bar_code" placeholder="Barcode" class="border-2 border-blue-800 rounded-md">
             </div>
             <div>
               <label for="region_code" class="text-lg mr-2">Regioncode:</label>
-              <input type="text" id="region_code" name="region_code" placeholder="Regioncode" required class="border-2 border-blue-800 rounded-md">
+              <input type="text" id="region_code" name="region_code" placeholder="Regioncode" class="border-2 border-blue-800 rounded-md">
             </div>
             <div>
               <label for="release_date" class="text-lg mr-2">Media release date:</label>
@@ -77,6 +77,18 @@
                 {{end}}
                 <option value="1" selected hidden>--Choose Case Type--</option>
               </select>
+            </div>
+            <div>
+              <label for="mediacount" class="text-lg mr-2">Media Count:</label>
+              <input type="number" id="mediacount" name="mediacount" value="1" class="border-2 border-blue-800 rounded-md">
+            </div>
+            <div>
+              <label for="audiolangs" class="text-lg mr-2">Audio Languanges:</label>
+              <input type="text" id="audiolangs" name="audiolangs" placeholder="Audio Languanges" class="border-2 border-blue-800 rounded-md">
+            </div>
+            <div>
+              <label for="sublangs" class="text-lg mr-2">Subtitles Languanges:</label>
+              <input type="text" id="sublangs" name="sublangs" placeholder="Subtitle Languanges" class="border-2 border-blue-800 rounded-md">
             </div>
             <div>
               <label for="publishers" class="text-lg mr-2">Publisher:</label>
