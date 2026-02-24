@@ -126,15 +126,11 @@ func DeleteCollection(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-
-		// Optional: Prüfen, ob überhaupt eine Zeile gelöscht wurde
 		rows, _ := result.RowsAffected()
 		if rows == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Collection nicht gefunden", "id": id})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Collection not found", "id": id})
 			return
 		}
-
-		// Kein Redirect mehr, sondern JSON-Bestätigung
-		c.JSON(http.StatusOK, gin.H{"message": "Collection erfolgreich gelöscht", "id": id})
+		c.JSON(http.StatusOK, gin.H{"message": "Collection successfully deleted", "id": id})
 	}
 }
