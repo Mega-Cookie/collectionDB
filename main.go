@@ -95,7 +95,7 @@ func initDB(databasefile string) {
 	createTableQuery = `CREATE TABLE IF NOT EXISTS publishers (
 		publisherID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE,
-		STOCK BOOLEAN NOT NULL DEFAULT 0,
+		DESCRIPTION TEXT,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(createTableQuery)
@@ -198,7 +198,7 @@ func initDB(databasefile string) {
 		FOR EACH ROW
 		WHEN OLD.categoryID = 1
 		BEGIN
-    	SELECT RAISE(ABORT, 'You cant delete the default Category.);
+    	SELECT RAISE(ABORT, 'You cant delete the default Category.');
 		END;`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
