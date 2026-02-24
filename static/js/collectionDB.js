@@ -1,7 +1,7 @@
 function showSuccessToast(message) {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
-    toast.className = 'SucessToast';
+    toast.className = 'SuccessToast';
     toast.innerText = message;
     container.appendChild(toast);
     setTimeout(() => {
