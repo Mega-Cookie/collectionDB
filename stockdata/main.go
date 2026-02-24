@@ -124,14 +124,18 @@ func CreateMediaType(db *sql.DB) gin.HandlerFunc {
 func DeleteMediaType(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM mediatypes WHERE mediatypeID = ?`, id)
+		result, err := db.Exec(`DELETE FROM mediatypes WHERE mediatypeID = ?`, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete mediatype"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "id": id})
 			fmt.Println(err)
 			return
 		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Media Type nicht gefunden", "id": id})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Media Type erfolgreich gelöscht", "id": id})
 	}
 }
 func CreateCaseType(db *sql.DB) gin.HandlerFunc {
@@ -150,14 +154,18 @@ func CreateCaseType(db *sql.DB) gin.HandlerFunc {
 func DeleteCaseType(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM casetypes WHERE casetypeID = ?`, id)
+		result, err := db.Exec(`DELETE FROM casetypes WHERE casetypeID = ?`, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete casetype"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "id": id})
 			fmt.Println(err)
 			return
 		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Case Type nicht gefunden", "id": id})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Case Type erfolgreich gelöscht", "id": id})
 	}
 }
 func CreateCategory(db *sql.DB) gin.HandlerFunc {
@@ -176,14 +184,18 @@ func CreateCategory(db *sql.DB) gin.HandlerFunc {
 func DeleteCategory(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM categories WHERE categoryID = ?`, id)
+		result, err := db.Exec(`DELETE FROM categories WHERE categoryID = ?`, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete category"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "id": id})
 			fmt.Println(err)
 			return
 		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Category nicht gefunden", "id": id})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Category erfolgreich gelöscht", "id": id})
 	}
 }
 func CreatePublisher(db *sql.DB) gin.HandlerFunc {
@@ -202,14 +214,18 @@ func CreatePublisher(db *sql.DB) gin.HandlerFunc {
 func DeletePublisher(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM publishers WHERE publisherID = ?`, id)
+		result, err := db.Exec(`DELETE FROM publishers WHERE publisherID = ?`, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete publisher"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "id": id})
 			fmt.Println(err)
 			return
 		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Publisher nicht gefunden", "id": id})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Publisher erfolgreich gelöscht", "id": id})
 	}
 }
 func CreateGenre(db *sql.DB) gin.HandlerFunc {
@@ -228,13 +244,17 @@ func CreateGenre(db *sql.DB) gin.HandlerFunc {
 func DeleteGenre(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM genres WHERE genreID = ?`, id)
+		result, err := db.Exec(`DELETE FROM genres WHERE genreID = ?`, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete genre"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "id": id})
 			fmt.Println(err)
 			return
 		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Genre nicht gefunden", "id": id})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Genre erfolgreich gelöscht", "id": id})
 	}
 }
