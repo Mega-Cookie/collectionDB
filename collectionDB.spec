@@ -1,16 +1,16 @@
 Name:       collectionDB
-Version:    0.0.2alpha3
+Version:    0.0.2alpha5
 Release:    1%{?dist}
 Summary:    A simple web app for managing your collections of physical media.
 
 License:    GPLv3
 URL:        https://github.com/Mega-Cookie/collectionDB
-Source0:    collectionDB-0.0.2alpha3.tar.gz
+Source0:    https://github.com/Mega-Cookie/collectionDB/archive/refs/tags/0.0.2alpha5.tar.gz
 
 BuildRequires:  golang
 BuildRequires:  systemd-rpm-macros
 
-Provides:   %{name}-%{version}
+Provides: %{name} = %{version}-%{release}
 
 %description
 A simple webapp for managing your collections of physical media written in Go with SQLite.
@@ -22,6 +22,10 @@ A simple webapp for managing your collections of physical media written in Go wi
 
 %build
 go build -v -o %{name}
+
+%check
+# No tests yet
+/usr/bin/true
 
 %install
 install -Dpm 0755 VERSION %{buildroot}%{_sysconfdir}/%{name}/VERSION
@@ -63,3 +67,7 @@ cp -a static/* %{buildroot}%{_sysconfdir}/%{name}/static/
 - Include tailwindcss 4.1 in source code @Mega-Cookie
 - Refactor web UI templates add header footer and navigation for modularity by @Mega-Cookie
 - Update Readme by @Mega-Cookie
++ Tue Feb 24 2026 Mega-Cookie - 0.0.2alpha5
+- Bumb go to 1.26
+- Fix many bugs
+- First implementation of JavaScript
