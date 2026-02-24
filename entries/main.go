@@ -321,13 +321,22 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 func DeleteEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM entries WHERE entryID = ?`, id)
+
+		result, err := db.Exec(`DELETE FROM entries WHERE entryID = ?`, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete entry"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "id": id})
 			fmt.Println(err)
 			return
 		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/")
+
+		// Optional: Prüfen, ob überhaupt eine Zeile gelöscht wurde
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Eintrag nicht gefunden", "id": id})
+			return
+		}
+
+		// Kein Redirect mehr, sondern JSON-Bestätigung
+		c.JSON(http.StatusOK, gin.H{"message": "Eintrag erfolgreich gelöscht", "id": id})
 	}
 }
