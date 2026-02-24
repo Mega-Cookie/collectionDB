@@ -328,15 +328,11 @@ func DeleteEntry(db *sql.DB) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-
-		// Optional: Prüfen, ob überhaupt eine Zeile gelöscht wurde
 		rows, _ := result.RowsAffected()
 		if rows == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Eintrag nicht gefunden", "id": id})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Entry not found", "id": id})
 			return
 		}
-
-		// Kein Redirect mehr, sondern JSON-Bestätigung
-		c.JSON(http.StatusOK, gin.H{"message": "Eintrag erfolgreich gelöscht", "id": id})
+		c.JSON(http.StatusOK, gin.H{"message": "Entry successfully deleted", "id": id})
 	}
 }
