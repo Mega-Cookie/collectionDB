@@ -19,21 +19,21 @@ var db *sql.DB
 
 func setStockData() {
 	var err error
-	_, err = db.Exec(`INSERT OR IGNORE INTO categories (NAME, STOCK)
+	_, err = db.Exec(`INSERT OR IGNORE INTO categories (NAME, DESCRIPTION)
 					VALUES
-					('No Category', '1');
-					INSERT OR IGNORE INTO genres (NAME, STOCK)
+					('No Category', 'This is the default category if no other category is selected');
+					INSERT OR IGNORE INTO genres (NAME, DESCRIPTION)
 					VALUES
-					('No Genre', '1');
-					INSERT OR IGNORE INTO publishers (NAME, STOCK)
+					('No Genre', 'This is the default genry if no other genre is selected');
+					INSERT OR IGNORE INTO publishers (NAME, DESCRIPTION)
 					VALUES
-					('No Publisher', '1');
-					INSERT OR IGNORE INTO casetypes (NAME, STOCK)
+					('No Publisher', 'This is the default publisher if no other publisher is selected');
+					INSERT OR IGNORE INTO casetypes (NAME, DESCRIPTION)
 					VALUES
-					('Jewelcase', '1');
-					INSERT OR IGNORE INTO mediatypes (NAME, STOCK)
+					('No Case', 'This is the default casetype if no other casetype is selected');
+					INSERT OR IGNORE INTO mediatypes (NAME, DESCRIPTION)
 					VALUES
-					('DVD', '1');
+					('Default', 'This is the default mediatype if no other mediatype is selected');
 					INSERT OR IGNORE INTO collections (NAME, DESCRIPTION)
 					VALUES
 					('Default', 'This is the default collection if no other collection is selected');`)
@@ -51,35 +51,49 @@ func initDB(databasefile string) {
 	createTableQuery := `CREATE TABLE IF NOT EXISTS mediatypes (
 		mediatypeID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE,
-		STOCK BOOLEAN NOT NULL DEFAULT 0,
+		DESCRIPTION TEXT,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	createTableQuery = `CREATE TABLE IF NOT EXISTS casetypes (
 		casetypeID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE,
-		STOCK BOOLEAN NOT NULL DEFAULT 0,
+		DESCRIPTION TEXT,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	createTableQuery = `CREATE TABLE IF NOT EXISTS genres (
 		genreID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE,
-		STOCK BOOLEAN NOT NULL DEFAULT 0,
+		DESCRIPTION TEXT,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	createTableQuery = `CREATE TABLE IF NOT EXISTS categories (
 		categoryID INTEGER PRIMARY KEY AUTOINCREMENT,
+		NAME STRING UNIQUE,
+		DESCRIPTION TEXT,
+		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createTableQuery = `CREATE TABLE IF NOT EXISTS publishers (
+		publisherID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME STRING UNIQUE,
 		STOCK BOOLEAN NOT NULL DEFAULT 0,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -88,6 +102,7 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	createTableQuery = `CREATE TABLE IF NOT EXISTS collections (
 		collectionID INTEGER PRIMARY KEY AUTOINCREMENT,
 		NAME TEXT UNIQUE,
@@ -101,6 +116,7 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	createTableQuery = `CREATE TABLE IF NOT EXISTS imdb (
 		imdbID TEXT PRIMARY KEY,
 		RATING FLOAT,
@@ -115,36 +131,27 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	createTableQuery = `CREATE TABLE IF NOT EXISTS publishers (
-		publisherID INTEGER PRIMARY KEY AUTOINCREMENT,
-		NAME STRING UNIQUE,
-		STOCK BOOLEAN NOT NULL DEFAULT 0,
-		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
-	_, err = db.Exec(createTableQuery)
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	createTableQuery = `CREATE TABLE IF NOT EXISTS entries (
 		entryID INTEGER PRIMARY KEY AUTOINCREMENT,
 		TITLE TEXT NOT NULL,
 		YEAR INTEGER NOT NULL,
-		PLOT TEXT NOT NULL DEFAULT '-',
-		COMMENT TEXT NOT NULL DEFAULT '-',
-		AUDIOLANGS TEXT NOT NULL DEFAULT 'en',
-		SUBTITLELANGS TEXT NOT NULL DEFAULT 'de',
-		MEDIARELEASEDATE TEXT DEFAULT '0000-01-01',
-		MEDIACOUNT INTEGER NOT NULL DEFAULT 1,
-		IS_DIGITAL BOOLEAN NOT NULL DEFAULT 0,
-		IS_BOOKLET BOOLEAN NOT NULL DEFAULT 0,
-		REGIONCODE INTEGER NOT NULL DEFAULT 2,
-		BARCODE TEXT NOT NULL DEFAULT '000000000',
-		collectionID INTEGER NOT NULL DEFAULT 1,
-		genreID INTEGER NOT NULL DEFAULT 1,
-		mediatypeID INTEGER NOT NULL DEFAULT 1,
-		casetypeID INTEGER NOT NULL DEFAULT 1,
-		publisherID INTEGER NOT NULL DEFAULT 1,
-		imdbID TEXT NOT NULL DEFAULT 'tt0',
+		PLOT TEXT NOT NULL,
+		COMMENT TEXT NOT NULL,
+		AUDIOLANGS TEXT,
+		SUBTITLELANGS TEXT,
+		MEDIARELEASEDATE TEXT,
+		MEDIACOUNT INTEGER,
+		IS_DIGITAL BOOLEAN,
+		IS_BOOKLET BOOLEAN,
+		REGIONCODE INTEGER,
+		BARCODE TEXT,
+		collectionID INTEGER NOT NULL,
+		genreID INTEGER NOT NULL,
+		mediatypeID INTEGER NOT NULL,
+		casetypeID INTEGER NOT NULL,
+		publisherID INTEGER NOT NULL,
+		imdbID TEXT,
 		CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		EDITED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY(collectionID) REFERENCES collections(collectionID),
@@ -158,6 +165,7 @@ func initDB(databasefile string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	createTableQuery = `CREATE TABLE IF NOT EXISTS info (
 		instanceID INTEGER PRIMARY KEY,
 		VERSION STRING,
@@ -168,6 +176,78 @@ func initDB(databasefile string) {
 		SQLITEVERSION STRING,
 		TIMEZONE STRING
 	);`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS prevent_delete_default_collection
+		BEFORE DELETE ON collections
+		FOR EACH ROW
+		WHEN OLD.collectionID = 1
+		BEGIN
+    	SELECT RAISE(ABORT, 'You cant delete the default Collection.');
+		END;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS prevent_delete_default_category
+		BEFORE DELETE ON categories
+		FOR EACH ROW
+		WHEN OLD.categoryID = 1
+		BEGIN
+    	SELECT RAISE(ABORT, 'You cant delete the default Category.);
+		END;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS prevent_delete_default_genre
+		BEFORE DELETE ON genres
+		FOR EACH ROW
+		WHEN OLD.genreID = 1
+		BEGIN
+    	SELECT RAISE(ABORT, 'You cant delete the default Genre.');
+		END;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS prevent_delete_default_case
+		BEFORE DELETE ON casetypes
+		FOR EACH ROW
+		WHEN OLD.casetypeID = 1
+		BEGIN
+    	SELECT RAISE(ABORT, 'You cant delete the default Case Type.');
+		END;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS prevent_delete_default_media
+		BEFORE DELETE ON mediatypes
+		FOR EACH ROW
+		WHEN OLD.mediatypeID = 1
+		BEGIN
+    	SELECT RAISE(ABORT, 'You cant delete the default Media Type.');
+		END;`
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createTableQuery = `CREATE TRIGGER IF NOT EXISTS prevent_delete_default_publisher
+		BEFORE DELETE ON publishers
+		FOR EACH ROW
+		WHEN OLD.publisherID = 1
+		BEGIN
+    	SELECT RAISE(ABORT, 'You cant delete the default Publisher.');
+		END;`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		log.Fatal(err)
@@ -230,23 +310,23 @@ func main() {
 	router.POST("/stock/publisher/create", stockdata.CreatePublisher(db))
 	router.POST("/stock/category/create", stockdata.CreateCategory(db))
 	router.POST("/stock/genre/create", stockdata.CreateGenre(db))
-	router.POST("/stock/mediatype/:id/delete", stockdata.DeleteMediaType(db))
-	router.POST("/stock/casetype/:id/delete", stockdata.DeleteCaseType(db))
-	router.POST("/stock/publisher/:id/delete", stockdata.DeletePublisher(db))
-	router.POST("/stock/category/:id/delete", stockdata.DeleteCategory(db))
-	router.POST("/stock/genre/:id/delete", stockdata.DeleteGenre(db))
+	router.DELETE("/mediatype/:id/delete", stockdata.DeleteMediaType(db))
+	router.DELETE("/casetype/:id/delete", stockdata.DeleteCaseType(db))
+	router.DELETE("/publisher/:id/delete", stockdata.DeletePublisher(db))
+	router.DELETE("/category/:id/delete", stockdata.DeleteCategory(db))
+	router.DELETE("/genre/:id/delete", stockdata.DeleteGenre(db))
 	router.GET("/entries/:id", entries.ViewEntry(db))
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
 	router.GET("/entries/:id/edit", entries.ShowEditEntryPage(db))
 	router.POST("/entries/:id/edit", entries.EditEntry(db))
-	router.POST("/entries/:id/delete", entries.DeleteEntry(db))
+	router.DELETE("/entries/:id/delete", entries.DeleteEntry(db))
 	router.GET("/collections/:id", collect.ViewCollection(db))
 	router.GET("/create_collection", collect.ShowCreateCollectionPage(db))
 	router.POST("/create_collection", collect.CreateCollection(db))
 	router.GET("/collections/:id/edit", collect.ShowEditCollectionPage(db))
 	router.POST("/collections/:id/edit", collect.EditCollection(db))
-	router.POST("/collections/:id/delete", collect.DeleteCollection(db))
+	router.DELETE("/collections/:id/delete", collect.DeleteCollection(db))
 	log.Printf("Acessing SQLite: %s", config.Database)
 	if config.IsTLS {
 		log.Printf("Server is running on https://%s", config.TLSListen)

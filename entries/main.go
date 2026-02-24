@@ -131,17 +131,20 @@ func CreateEntry(db *sql.DB) gin.HandlerFunc {
 		comment := c.PostForm("comment")
 		regioncode := c.PostForm("region_code")
 		barcode := c.PostForm("bar_code")
+		audiolangs := c.PostForm("audiolangs")
+		sublangs := c.PostForm("sublangs")
+		mediacount := c.PostForm("mediacount")
 		imdbid := c.PostForm("imdbid")
 		publisherid := c.PostForm("publisherid")
 		if imdbid != "" {
-			_, err := db.Exec(`INSERT OR IGNORE INTO imdb (imdbID) VALUES (?)`, imdbid)
+			_, err := db.Exec(`INSERT OR IGNORE INTO imdb (imdbID) VALUES (?)`, c.PostForm("imdbid"))
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to POST imdbID"})
 				fmt.Println(err)
 				return
 			}
 		}
-		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, mediatypeID, casetypeID, collectionID, genreID, IS_DIGITAL, IS_BOOKLET, MEDIARELEASEDATE, COMMENT, REGIONCODE, BARCODE, imdbID, publisherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, title, year, plot, mediatypeid, casetypeid, collid, genreid, isdigital, isbooklet, released, comment, regioncode, barcode, imdbid, publisherid)
+		_, err := db.Exec(`INSERT INTO entries (TITLE, YEAR, PLOT, mediatypeID, casetypeID, collectionID, genreID, IS_DIGITAL, IS_BOOKLET, MEDIARELEASEDATE, COMMENT, REGIONCODE, BARCODE, imdbID, publisherID, AUDIOLANGS, SUBTITLELANGS, MEDIACOUNT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, title, year, plot, mediatypeid, casetypeid, collid, genreid, isdigital, isbooklet, released, comment, regioncode, barcode, imdbid, publisherid, audiolangs, sublangs, mediacount)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
 			fmt.Println(err)
@@ -198,6 +201,8 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 		collections := collect.ListCollections(db)
 		genres := stockdata.ListGenres(db)
 		mediatypes := stockdata.ListMediaTypes(db)
+		casetypes := stockdata.ListCaseTypes(db)
+		publishers := stockdata.ListPublishers(db)
 		entry.CreatedAt = small.SetTime(db, &entry.CreatedAt)
 		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
 		c.Header("Cache-Control", "no-store")
@@ -206,21 +211,54 @@ func ShowEditEntryPage(db *sql.DB) gin.HandlerFunc {
 			"Collections": collections,
 			"Genres":      genres,
 			"MediaTypes":  mediatypes,
+			"CaseTypes":   casetypes,
+			"Publishers":  publishers,
 		})
 	}
 }
 func EditEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		title := c.PostForm("title")
-		plot := c.PostForm("plot")
-		mediatypeid := c.PostForm("mediatypeid")
-		genreid := c.PostForm("genreid")
-		year := c.PostForm("year")
-		collid := c.PostForm("collid")
-		isdigital := c.PostForm("is_digital") == "on"
-		id := c.Param("id")
-		updateTableQuery := `UPDATE entries SET TITLE = ?, YEAR = ?, PLOT = ?, mediatypeID = ?, genreID = ?, IS_DIGITAL = ?, collectionID = ?, EDITED_AT = CURRENT_TIMESTAMP where entryID = ?`
-		_, err := db.Exec(updateTableQuery, title, year, plot, mediatypeid, genreid, isdigital, collid, id)
+		updateTableQuery := `UPDATE entries SET
+			TITLE = ?,
+			YEAR = ?,
+			PLOT = ?,
+			mediatypeID = ?,
+			casetypeID = ?,
+			genreID = ?,
+			IS_DIGITAL = ?,
+			IS_BOOKLET = ?,
+			collectionID = ?,
+			MEDIARELEASEDATE = ?,
+			COMMENT = ?,
+			REGIONCODE = ?,
+			BARCODE = ?,
+			AUDIOLANGS = ?,
+			SUBTITLELANGS = ?,
+			MEDIACOUNT = ?,
+			imdbID = ?,
+			publisherID = ?,
+			EDITED_AT = CURRENT_TIMESTAMP
+			where entryID = ?`
+		_, err := db.Exec(updateTableQuery,
+			c.PostForm("title"),
+			c.PostForm("year"),
+			c.PostForm("plot"),
+			c.PostForm("mediatypeid"),
+			c.PostForm("casetypeid"),
+			c.PostForm("genreid"),
+			c.PostForm("is_digital") == "on",
+			c.PostForm("is_booklet") == "on",
+			c.PostForm("collid"),
+			c.PostForm("release_date"),
+			c.PostForm("comment"),
+			c.PostForm("region_code"),
+			c.PostForm("bar_code"),
+			c.PostForm("audiolangs"),
+			c.PostForm("sublangs"),
+			c.PostForm("mediacount"),
+			c.PostForm("imdbid"),
+			c.PostForm("publisherid"),
+			c.Param("id"))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to edit entry"})
 			fmt.Println(err)
@@ -283,13 +321,18 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 func DeleteEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM entries WHERE entryID = ?`, id)
+
+		result, err := db.Exec(`DELETE FROM entries WHERE entryID = ?`, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete entry"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "id": id})
 			fmt.Println(err)
 			return
 		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/")
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Entry not found", "id": id})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Entry successfully deleted", "id": id})
 	}
 }

@@ -120,13 +120,17 @@ func ViewCollection(db *sql.DB) gin.HandlerFunc {
 func DeleteCollection(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		_, err := db.Exec(`DELETE FROM collections WHERE collectionID = ?`, id)
+		result, err := db.Exec(`DELETE FROM collections WHERE collectionID = ?`, id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete collection!"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "id": id})
 			fmt.Println(err)
 			return
 		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/")
+		rows, _ := result.RowsAffected()
+		if rows == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Collection not found", "id": id})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Collection successfully deleted", "id": id})
 	}
 }

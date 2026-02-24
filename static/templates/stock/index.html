@@ -7,21 +7,13 @@
           <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Media Types</span>
         </div>
         {{range .MediaTypes}}
-        <div class="grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
-        <div>    
-          <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
-        </div>
-          {{if not .IsStock}}
-          <div class="w-fit flex py-0.5 justify-self-end ">
-            <form action="/stock/mediatype/{{.ID}}/delete" method="POST">
-            <button class="flex h-fit" type="submit">
-            <a class="w-fit flex text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">
-            Delete
-            </a>
-            </button>
-            </form>
+        <div class="stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div>    
+            <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
           </div>
-          {{end}}
+            <div class="flex justify-self-end">
+              <button class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400 delete-stock-btn" data-type="mediatype" data-id="{{.ID}}">Delete</button>
+            </div>
         </div>
         {{end}}
         <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
@@ -42,21 +34,13 @@
           <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Publishers</span>
         </div>
         {{range .Publishers}}
-        <div class="grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
-        <div>    
-          <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
-        </div>
-          {{if not .IsStock}}
-          <div class="w-fit flex py-0.5 justify-self-end ">
-            <form action="/stock/publisher/{{.ID}}/delete" method="POST">
-            <button class="flex h-fit" type="submit">
-            <a class="w-fit flex text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">
-            Delete
-            </a>
-            </button>
-            </form>
+        <div class="stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div>    
+            <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
           </div>
-          {{end}}
+            <div class="flex justify-self-end">
+              <button class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400 delete-stock-btn" data-type="publisher" data-id="{{.ID}}">Delete</button>
+            </div>
         </div>
         {{end}}
         <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
@@ -77,21 +61,13 @@
           <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Case Types</span>
         </div>
         {{range .CaseTypes}}
-        <div class="grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
-        <div>    
-          <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
-        </div>
-          {{if not .IsStock}}
-          <div class="w-fit flex py-0.5 justify-self-end ">
-            <form action="/stock/casetype/{{.ID}}/delete" method="POST">
-            <button class="flex h-fit" type="submit">
-            <a class="w-fit flex text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">
-            Delete
-            </a>
-            </button>
-            </form>
+        <div class="stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div>    
+            <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
           </div>
-          {{end}}
+            <div class="flex justify-self-end">
+              <button class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400 delete-stock-btn" data-type="casetype" data-id="{{.ID}}">Delete</button>
+            </div>
         </div>
         {{end}}
         <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
@@ -112,21 +88,13 @@
           <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Categories</span>
         </div>
         {{range .Categories}}
-        <div class="grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
-        <div>    
-          <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
-        </div>
-          {{if not .IsStock}}
-          <div class="w-fit flex py-0.5 justify-self-end ">
-            <form action="/stock/category/{{.ID}}/delete" method="POST">
-            <button class="flex h-fit" type="submit">
-            <a class="w-fit flex text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">
-            Delete
-            </a>
-            </button>
-            </form>
+        <div class="stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div>    
+            <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
           </div>
-          {{end}}
+            <div class="flex justify-self-end">
+              <button class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400 delete-stock-btn" data-type="category" data-id="{{.ID}}">Delete</button>
+            </div>
         </div>
         {{end}}
         <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
@@ -147,21 +115,13 @@
           <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Genres</span>
         </div>
         {{range .Genres}}
-        <div class="grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
-        <div>    
-          <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
-        </div>
-          {{if not .IsStock}}
-          <div class="w-fit flex py-0.5 justify-self-end ">
-            <form action="/stock/genre/{{.ID}}/delete" method="POST">
-            <button class="flex h-fit" type="submit">
-            <a class="w-fit flex text-xs bg-orange-200 text-orange-800 py-2 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">
-            Delete
-            </a>
-            </button>
-            </form>
+        <div class="stock-card stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div>    
+            <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">{{.Name}}</a>
           </div>
-          {{end}}
+            <div class="flex justify-self-end">
+              <button class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400 delete-stock-btn" data-type="genre" data-id="{{.ID}}">Delete</button>
+            </div>
         </div>
         {{end}}
         <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
