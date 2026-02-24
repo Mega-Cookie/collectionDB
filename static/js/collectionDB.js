@@ -26,7 +26,7 @@ function showErrorToast(message) {
 document.addEventListener('click', async function(e) {
     if (e.target.classList.contains('delete-entry-btn')) {
         const id = e.target.getAttribute('data-id');
-        if (!confirm(`Eintrag ${id} wirklich löschen?`)) return;
+        if (!confirm(`Realy delete entry ${id}?`)) return;
         try {
             const response = await fetch(`/entries/${id}/delete`, {
                 method: 'DELETE',
@@ -34,25 +34,25 @@ document.addEventListener('click', async function(e) {
             });
         if (response.ok) {
             const data = await response.json();
-            console.log("Antwort erhalten:", data);
+            console.log("Answer recieved:", data);
             const card = e.target.closest('.entry-card');
             if (card) {
                 card.remove();
             }
-            showSucessToast(data.message); 
+            showSuccessToast(data.message); 
             } 
          else {
                 const data = await response.json();
-                console.log("Antwort erhalten:", data);
+                console.log("Answer recieved:", data);
                 showErrorToast(data.error);
             }
         } catch (err) {
-            console.error("Fehler:", err);
+            console.error("Error:", err);
         }
     }
     if (e.target.classList.contains('delete-collect-btn')) {
         const id = e.target.getAttribute('data-id');
-        if (!confirm(`Collection ${id} wirklich löschen?`)) return;
+        if (!confirm(`Realy delete collection ${id}?`)) return;
         try {
             const response = await fetch(`/collections/${id}/delete`, {
                 method: 'DELETE',
@@ -60,26 +60,26 @@ document.addEventListener('click', async function(e) {
             });
         if (response.ok) {
             const data = await response.json();
-            console.log("Antwort erhalten:", data);
+            console.log("Answer recieved:", data);
             const card = e.target.closest('.collection-card');
             if (card) {
                 card.remove();
             }
-            showSucessToast(data.message); 
+            showSuccessToast(data.message); 
             } 
          else {
                 const data = await response.json();
-                console.log("Antwort erhalten:", data);
+                console.log("Answer recieved:", data);
                 showErrorToast(data.error);
             }
         } catch (err) {
-            console.error("Fehler:", err);
+            console.error("Error:", err);
         }
     }
     if (e.target.classList.contains('delete-stock-btn')) {
         const type = e.target.getAttribute('data-type')
         const id = e.target.getAttribute('data-id');
-        if (!confirm(`${type} ${id} wirklich löschen?`)) return;
+        if (!confirm(`Realy delete ${type} ${id}?`)) return;
         try {
             const response = await fetch(`/${type}/${id}/delete`, {
                 method: 'DELETE',
@@ -87,20 +87,20 @@ document.addEventListener('click', async function(e) {
             });
         if (response.ok) {
             const data = await response.json();
-            console.log("Antwort erhalten:", data);
+            console.log("Answer recieved:", data);
             const card = e.target.closest('.stock-card');
             if (card) {
                 card.remove();
             }
-            showSucessToast(data.message); 
+            showSuccessToast(data.message); 
             } 
          else {
                 const data = await response.json();
-                console.log("Antwort erhalten:", data);
+                console.log("Answer recieved:", data);
                 showErrorToast(data.error);
             }
         } catch (err) {
-            console.error("Fehler:", err);
+            console.error("Error:", err);
         }
     }
 });
