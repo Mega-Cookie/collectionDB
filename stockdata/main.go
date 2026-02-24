@@ -132,10 +132,10 @@ func DeleteMediaType(db *sql.DB) gin.HandlerFunc {
 		}
 		rows, _ := result.RowsAffected()
 		if rows == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Media Type nicht gefunden", "id": id})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Media type not found", "id": id})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Media Type erfolgreich gelöscht", "id": id})
+		c.JSON(http.StatusOK, gin.H{"message": "Media type successfully deleted", "id": id})
 	}
 }
 func CreateCaseType(db *sql.DB) gin.HandlerFunc {
@@ -162,10 +162,10 @@ func DeleteCaseType(db *sql.DB) gin.HandlerFunc {
 		}
 		rows, _ := result.RowsAffected()
 		if rows == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Case Type nicht gefunden", "id": id})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Case Type not found", "id": id})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Case Type erfolgreich gelöscht", "id": id})
+		c.JSON(http.StatusOK, gin.H{"message": "Case type successfully deleted", "id": id})
 	}
 }
 func CreateCategory(db *sql.DB) gin.HandlerFunc {
@@ -192,10 +192,10 @@ func DeleteCategory(db *sql.DB) gin.HandlerFunc {
 		}
 		rows, _ := result.RowsAffected()
 		if rows == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Category nicht gefunden", "id": id})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Category not found", "id": id})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Category erfolgreich gelöscht", "id": id})
+		c.JSON(http.StatusOK, gin.H{"message": "Category successfully deleted", "id": id})
 	}
 }
 func CreatePublisher(db *sql.DB) gin.HandlerFunc {
@@ -222,10 +222,10 @@ func DeletePublisher(db *sql.DB) gin.HandlerFunc {
 		}
 		rows, _ := result.RowsAffected()
 		if rows == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Publisher nicht gefunden", "id": id})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Publisher not found", "id": id})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Publisher erfolgreich gelöscht", "id": id})
+		c.JSON(http.StatusOK, gin.H{"message": "Publisher successfully deleted", "id": id})
 	}
 }
 func CreateGenre(db *sql.DB) gin.HandlerFunc {
@@ -252,9 +252,9 @@ func DeleteGenre(db *sql.DB) gin.HandlerFunc {
 		}
 		rows, _ := result.RowsAffected()
 		if rows == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Genre nicht gefunden", "id": id})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Genre not found", "id": id})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Genre erfolgreich gelöscht", "id": id})
+		c.JSON(http.StatusOK, gin.H{"message": "Genre successfully deleted", "id": id})
 	}
 }
