@@ -321,7 +321,6 @@ func ViewEntry(db *sql.DB) gin.HandlerFunc {
 func DeleteEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-
 		result, err := db.Exec(`DELETE FROM entries WHERE entryID = ?`, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "id": id})

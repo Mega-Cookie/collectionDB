@@ -22,11 +22,19 @@ function showErrorToast(message) {
         setTimeout(() => toast.remove(), 500);
     }, 3000);
 }
-
+function getList() {
+  fetch('/list')
+    .then(response => response.json()) // Wir erwarten JSON
+    .then(data => {
+            const container = document.getElementById('list')
+    })
+    .catch(error => console.error('Fehler:', error));
+}
 document.addEventListener('click', async function(e) {
     if (e.target.classList.contains('delete-entry-btn')) {
         const id = e.target.getAttribute('data-id');
-        if (!confirm(`Realy delete entry ${id}?`)) return;
+        const name = e.target.getAttribute('data-name')
+        if (!confirm(`Realy delete entry ${name}?`)) return;
         try {
             const response = await fetch(`/entries/${id}/delete`, {
                 method: 'DELETE',
@@ -39,7 +47,7 @@ document.addEventListener('click', async function(e) {
             if (card) {
                 card.remove();
             }
-            showSuccessToast(data.message); 
+            showSuccessToast(data.message);
             } 
          else {
                 const data = await response.json();
@@ -52,7 +60,8 @@ document.addEventListener('click', async function(e) {
     }
     if (e.target.classList.contains('delete-collect-btn')) {
         const id = e.target.getAttribute('data-id');
-        if (!confirm(`Realy delete collection ${id}?`)) return;
+        const name = e.target.getAttribute('data-name')
+        if (!confirm(`Realy delete collection ${name}?`)) return;
         try {
             const response = await fetch(`/collections/${id}/delete`, {
                 method: 'DELETE',
@@ -65,8 +74,8 @@ document.addEventListener('click', async function(e) {
             if (card) {
                 card.remove();
             }
-            showSuccessToast(data.message); 
-            } 
+            showSuccessToast(data.message);
+            }
          else {
                 const data = await response.json();
                 console.log("Answer recieved:", data);
@@ -103,4 +112,8 @@ document.addEventListener('click', async function(e) {
             console.error("Error:", err);
         }
     }
+});
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Das HTML ist fertig geladen!');
+    getList();
 });

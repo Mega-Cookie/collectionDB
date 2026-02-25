@@ -253,11 +253,21 @@ func initDB(databasefile string) {
 		log.Fatal(err)
 	}
 }
-func ShowList(db *sql.DB) gin.HandlerFunc {
+func ShowPage(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		collections := collect.ListCollections(db)
 		entries := entries.ListEntries(db)
 		c.HTML(http.StatusOK, "index.html", gin.H{
+			"Entries":     entries,
+			"Collections": collections,
+		})
+	}
+}
+func GetList(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		collections := collect.ListCollections(db)
+		entries := entries.ListEntries(db)
+		c.JSON(http.StatusOK, gin.H{
 			"Entries":     entries,
 			"Collections": collections,
 		})
@@ -302,7 +312,8 @@ func main() {
 	router.Static("/static", config.Static)
 	templates := fmt.Sprintf("%s/templates/**/*.html", config.Static)
 	router.LoadHTMLGlob(templates)
-	router.GET("/", ShowList(db))
+	router.GET("/", ShowPage(db))
+	router.GET("/list", GetList(db))
 	router.GET("/stock", ShowStockList(db))
 	router.GET("/about", ShowAbout(db))
 	router.POST("/stock/mediatype/create", stockdata.CreateMediaType(db))
