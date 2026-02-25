@@ -253,23 +253,24 @@ func initDB(databasefile string) {
 		log.Fatal(err)
 	}
 }
-func ShowPage(db *sql.DB) gin.HandlerFunc {
+func ShowIndex(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	}
+}
+func GetCollections(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		collections := collect.ListCollections(db)
-		entries := entries.ListEntries(db)
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"Entries":     entries,
+		c.JSON(http.StatusOK, gin.H{
 			"Collections": collections,
 		})
 	}
 }
-func GetList(db *sql.DB) gin.HandlerFunc {
+func GetEntries(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		collections := collect.ListCollections(db)
 		entries := entries.ListEntries(db)
 		c.JSON(http.StatusOK, gin.H{
-			"Entries":     entries,
-			"Collections": collections,
+			"Entries": entries,
 		})
 	}
 }
@@ -291,12 +292,22 @@ func ShowStockList(db *sql.DB) gin.HandlerFunc {
 }
 func ShowAbout(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		systeminfo := small.GetSystemInfo(db)
-		c.HTML(http.StatusOK, "about.html", gin.H{
-			"Info": systeminfo,
-		})
+		c.HTML(http.StatusOK, "about.html", gin.H{})
 	}
 }
+func GetAbout(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		systeminfo := small.GetSystemInfo(db)
+		answer := gin.H{
+			"Status":  http.StatusOK,
+			"Message": "Successfully loaded Systeminfo",
+			"data": gin.H{
+				"Info": systeminfo},
+		}
+		c.JSON(http.StatusOK, answer)
+	}
+}
+
 func main() {
 	config := small.Configure()
 	initDB(config.Database)
@@ -312,10 +323,12 @@ func main() {
 	router.Static("/static", config.Static)
 	templates := fmt.Sprintf("%s/templates/**/*.html", config.Static)
 	router.LoadHTMLGlob(templates)
-	router.GET("/", ShowPage(db))
-	router.GET("/list", GetList(db))
+	router.GET("/", ShowIndex(db))
+	router.GET("/api/v1/entries", GetEntries(db))
+	router.GET("/api/v1/collections", GetCollections(db))
 	router.GET("/stock", ShowStockList(db))
 	router.GET("/about", ShowAbout(db))
+	router.GET("/api/v1/about", GetAbout(db))
 	router.POST("/stock/mediatype/create", stockdata.CreateMediaType(db))
 	router.POST("/stock/casetype/create", stockdata.CreateCaseType(db))
 	router.POST("/stock/publisher/create", stockdata.CreatePublisher(db))

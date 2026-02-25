@@ -1,60 +1,3 @@
-const { createApp } = Vue;
-
-createApp({
-    delimiters: ['[[', ']]'],
-    data() {
-        return {
-            Collections: [], // Hier landet dein JSON
-            Entries: []
-        }
-    },
-    methods: {
-        async fetchData() {
-            try {
-                const response = await fetch('/list');
-                const data = await response.json();
-                
-                // Vue merkt sich die Daten und aktualisiert das HTML automatisch
-                this.Collections = data.Collections || [];
-                this.Entries = data.Entries || [];
-            } catch (error) {
-                console.error("Fehler beim Laden:", error);
-            }
-        },
-        async deletething(id, name, type) {
-            if (!confirm(`Realy delete ${type} ${name}?`)) return;
-                try {
-                    const response = await fetch(`/${type}/${id}/delete`, {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log("Answer recieved:", data);
-                    //    const card = e.target.closest('.stock-card');
-                    //    if (card) {
-                    //        card.remove();
-                    //    }
-                        showSuccessToast(data.message); 
-                        this.fetchData()
-                    }
-                    else {
-                            const data = await response.json();
-                            console.log("Answer recieved:", data);
-                            showErrorToast(data.error);
-                        }
-                    }
-                catch (err) {
-                    console.error("Error:", err);
-                }
-        }
-    },
-    mounted() {
-        // Wird automatisch beim Laden der Seite ausgeführt
-        this.fetchData();
-    }
-}) .mount('#app');
-
 function showSuccessToast(message) {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -79,63 +22,87 @@ function showErrorToast(message) {
         setTimeout(() => toast.remove(), 500);
     }, 3000);
 }
-
+const { createApp } = Vue;
+createApp({
+    delimiters: ['[[', ']]'],
+    data() {
+        return {
+            Collections: [],
+            Entries: []
+        }
+    },
+    methods: {
+        async fetchCollections() {
+            try {
+                const response = await fetch('/api/v1/collections');
+                const data = await response.json();
+                this.Collections = data.Collections || [];
+            } catch (error) {
+                console.error("Fehler beim Laden der Collections:", error);
+            }
+        },
+        async fetchEntries() {
+            try {
+                const response = await fetch('/api/v1/entries');
+                const data = await response.json();
+                this.Entries = data.Entries || [];
+            } catch (error) {
+                console.error("Fehler beim Laden der Entries:", error);
+            }
+        },
+        async deletething(id, name, type) {
+            if (!confirm(`Realy delete ${type} ${name}?`)) return;
+                try {
+                    const response = await fetch(`/${type}/${id}/delete`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log("Answer recieved:", data);
+                        showSuccessToast(data.message); 
+                        this.fetchCollections();
+                        this.fetchEntries();
+                    }
+                    else {
+                            const data = await response.json();
+                            console.log("Answer recieved:", data);
+                            showErrorToast(data.error);
+                        }
+                    }
+                catch (err) {
+                    console.error("Error:", err);
+                }
+        }
+    },
+    mounted() {
+        this.fetchCollections();
+        this.fetchEntries();
+    }
+}) .mount('#index');
+createApp({
+    delimiters: ['[[', ']]'],
+    data() {
+        return {
+            Info: []
+        }
+    },
+    methods: {
+        async fetchAbout() {
+            try {
+                const response = await fetch('/api/v1/about');
+                const data = await response.json();
+                this.Info = data.data.Info || [];
+            } catch (error) {
+                console.error("Fehler beim Laden der Infos:", error);
+            }
+        }
+    },
+    mounted() {
+        this.fetchAbout();
+    }
+}) .mount('#about');
 document.addEventListener('click', async function(e) {
-    if (e.target.classList.contains('delete-entry-btn')) {
-        const id = e.target.getAttribute('data-id');
-        const name = e.target.getAttribute('data-name')
-        if (!confirm(`Realy delete entry ${name}?`)) return;
-        try {
-            const response = await fetch(`/entries/${id}/delete`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        if (response.ok) {
-            const data = await response.json();
-            console.log("Answer recieved:", data);
-            const card = e.target.closest('.entry-card');
-            if (card) {
-                card.remove();
-            }
-            showSuccessToast(data.message);
-            } 
-         else {
-                const data = await response.json();
-                console.log("Answer recieved:", data);
-                showErrorToast(data.error);
-            }
-        } catch (err) {
-            console.error("Error:", err);
-        }
-        fetchData()
-    }
-    if (e.target.classList.contains('delete-collect-btn')) {
-        const id = e.target.getAttribute('data-id');
-        const name = e.target.getAttribute('data-name')
-        if (!confirm(`Realy delete collection ${name}?`)) return;
-        try {
-            const response = await fetch(`/collections/${id}/delete`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        if (response.ok) {
-            const data = await response.json();
-            console.log("Answer recieved:", data);
-            const card = e.target.closest('.collection-card');
-            if (card) {
-                card.remove();
-            }
-            showSuccessToast(data.message);
-            }
-         else {
-                const data = await response.json();
-                console.log("Answer recieved:", data);
-                showErrorToast(data.error);
-            }
-        } catch (err) {
-            console.error("Error:", err);
-        }
-    }
     if (e.target.classList.contains('delete-stock-btn')) {
         const type = e.target.getAttribute('data-type')
         const id = e.target.getAttribute('data-id');
