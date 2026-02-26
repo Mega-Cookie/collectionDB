@@ -17,30 +17,6 @@ import (
 
 var db *sql.DB
 
-func setStockData() {
-	var err error
-	_, err = db.Exec(`INSERT OR IGNORE INTO categories (NAME, DESCRIPTION)
-					VALUES
-					('No Category', 'This is the default category if no other category is selected');
-					INSERT OR IGNORE INTO genres (NAME, DESCRIPTION)
-					VALUES
-					('No Genre', 'This is the default genry if no other genre is selected');
-					INSERT OR IGNORE INTO publishers (NAME, DESCRIPTION)
-					VALUES
-					('No Publisher', 'This is the default publisher if no other publisher is selected');
-					INSERT OR IGNORE INTO casetypes (NAME, DESCRIPTION)
-					VALUES
-					('No Case', 'This is the default casetype if no other casetype is selected');
-					INSERT OR IGNORE INTO mediatypes (NAME, DESCRIPTION)
-					VALUES
-					('Default', 'This is the default mediatype if no other mediatype is selected');
-					INSERT OR IGNORE INTO collections (NAME, DESCRIPTION)
-					VALUES
-					('Default', 'This is the default collection if no other collection is selected');`)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 func initDB(databasefile string) {
 	var err error
 	database, _ := filepath.Abs(databasefile)
@@ -274,23 +250,36 @@ func GetEntries(db *sql.DB) gin.HandlerFunc {
 		})
 	}
 }
-func ShowStockList(db *sql.DB) gin.HandlerFunc {
+func ShowStock(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		mediatypes := stockdata.ListMediaTypes(db)
-		categories := stockdata.ListCategories(db)
-		genres := stockdata.ListGenres(db)
-		casetypes := stockdata.ListCaseTypes(db)
-		publishers := stockdata.ListPublishers(db)
-		c.HTML(http.StatusOK, "stock/index.html", gin.H{
-			"MediaTypes": mediatypes,
-			"Categories": categories,
-			"Genres":     genres,
-			"CaseTypes":  casetypes,
-			"Publishers": publishers,
-		})
+		c.HTML(http.StatusOK, "stock/index.html", gin.H{})
 	}
 }
-func ShowAbout(db *sql.DB) gin.HandlerFunc {
+func GetCaseTypes(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		casetypes := stockdata.ListCaseTypes(db)
+		answer := gin.H{
+			"Status":  http.StatusOK,
+			"Message": "Successfully loaded Case Types",
+			"data": gin.H{
+				"CaseTypes": casetypes},
+		}
+		c.JSON(http.StatusOK, answer)
+	}
+}
+func GetMediaTypes(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		mediatypes := stockdata.ListMediaTypes(db)
+		answer := gin.H{
+			"Status":  http.StatusOK,
+			"Message": "Successfully loaded Media Types",
+			"data": gin.H{
+				"MediaTypes": mediatypes},
+		}
+		c.JSON(http.StatusOK, answer)
+	}
+}
+func ShowAbout() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.HTML(http.StatusOK, "about.html", gin.H{})
 	}
@@ -311,7 +300,7 @@ func GetAbout(db *sql.DB) gin.HandlerFunc {
 func main() {
 	config := small.Configure()
 	initDB(config.Database)
-	setStockData()
+	small.SetStockData(db)
 	if !config.IsDebug {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -323,19 +312,15 @@ func main() {
 	router.Static("/static", config.Static)
 	templates := fmt.Sprintf("%s/templates/**/*.html", config.Static)
 	router.LoadHTMLGlob(templates)
+	// Browser
 	router.GET("/", ShowIndex(db))
-	router.GET("/api/v1/entries", GetEntries(db))
-	router.GET("/api/v1/collections", GetCollections(db))
-	router.GET("/stock", ShowStockList(db))
-	router.GET("/about", ShowAbout(db))
-	router.GET("/api/v1/about", GetAbout(db))
+	router.GET("/stock", ShowStock(db))
+	router.GET("/about", ShowAbout())
 	router.POST("/stock/mediatype/create", stockdata.CreateMediaType(db))
 	router.POST("/stock/casetype/create", stockdata.CreateCaseType(db))
 	router.POST("/stock/publisher/create", stockdata.CreatePublisher(db))
 	router.POST("/stock/category/create", stockdata.CreateCategory(db))
 	router.POST("/stock/genre/create", stockdata.CreateGenre(db))
-	router.DELETE("/mediatype/:id/delete", stockdata.DeleteMediaType(db))
-	router.DELETE("/casetype/:id/delete", stockdata.DeleteCaseType(db))
 	router.DELETE("/publisher/:id/delete", stockdata.DeletePublisher(db))
 	router.DELETE("/category/:id/delete", stockdata.DeleteCategory(db))
 	router.DELETE("/genre/:id/delete", stockdata.DeleteGenre(db))
@@ -344,14 +329,24 @@ func main() {
 	router.POST("/create_entry", entries.CreateEntry(db))
 	router.GET("/entries/:id/edit", entries.ShowEditEntryPage(db))
 	router.POST("/entries/:id/edit", entries.EditEntry(db))
-	router.DELETE("/entries/:id/delete", entries.DeleteEntry(db))
 	router.GET("/collections/:id", collect.ViewCollection(db))
 	router.GET("/create_collection", collect.ShowCreateCollectionPage(db))
 	router.POST("/create_collection", collect.CreateCollection(db))
 	router.GET("/collections/:id/edit", collect.ShowEditCollectionPage(db))
 	router.POST("/collections/:id/edit", collect.EditCollection(db))
-	router.DELETE("/collections/:id/delete", collect.DeleteCollection(db))
-	log.Printf("Acessing SQLite: %s", config.Database)
+	// API
+	router.GET("/api/v1/entries", GetEntries(db))
+	router.GET("/api/v1/collections", GetCollections(db))
+	router.GET("/api/v1/casetypes", GetCaseTypes(db))
+	router.GET("/api/v1/mediatypes", GetMediaTypes(db))
+	router.DELETE("/api/v1/collection/:id", collect.DeleteCollection(db))
+	router.DELETE("/api/v1/entry/:id", entries.DeleteEntry(db))
+	router.DELETE("/api/v1/mediatype/:id", stockdata.DeleteMediaType(db))
+	router.DELETE("/api/v1/casetype/:id", stockdata.DeleteCaseType(db))
+	router.GET("/api/v1/about", GetAbout(db))
+	// log
+	log.Printf("Accessing SQLite: %s", config.Database)
+	// SSL
 	if config.IsTLS {
 		log.Printf("Server is running on https://%s", config.TLSListen)
 		if err := router.RunTLS(config.TLSListen, config.Cert, config.Key); err != nil {
