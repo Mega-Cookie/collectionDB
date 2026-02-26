@@ -317,6 +317,29 @@ func GetAbout(db *sql.DB) gin.HandlerFunc {
 		c.JSON(http.StatusOK, answer)
 	}
 }
+func GetEntry(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		entry := entries.Get(db, id)
+		if entry.Title == "" {
+			answer := gin.H{
+				"Status":  http.StatusNotFound,
+				"Message": "Entry not found.",
+				"data": gin.H{
+					"entryID": id},
+			}
+			c.JSON(http.StatusNotFound, answer)
+		} else {
+			answer := gin.H{
+				"Status":  http.StatusOK,
+				"Message": "Successfully loaded Entry",
+				"data": gin.H{
+					"Entry": entry},
+			}
+			c.JSON(http.StatusOK, answer)
+		}
+	}
+}
 func ShowStock() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.HTML(http.StatusOK, "stock/index.html", gin.H{})
@@ -359,7 +382,7 @@ func main() {
 	router.DELETE("/publisher/:id/delete", stockdata.DeletePublisher(db))
 	router.DELETE("/category/:id/delete", stockdata.DeleteCategory(db))
 	router.DELETE("/genre/:id/delete", stockdata.DeleteGenre(db))
-	router.GET("/entries/:id", entries.ViewEntry(db))
+	router.GET("/entry/:id", entries.ShowEntry())
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
 	router.GET("/entries/:id/edit", entries.ShowEditEntryPage(db))
@@ -371,6 +394,7 @@ func main() {
 	router.POST("/collections/:id/edit", collect.EditCollection(db))
 	// API
 	router.GET("/api/v1/entries", GetEntries(db))
+	router.GET("/api/v1/entry/:id", GetEntry(db))
 	router.GET("/api/v1/collections", GetCollections(db))
 	router.GET("/api/v1/casetypes", GetCaseTypes(db))
 	router.GET("/api/v1/mediatypes", GetMediaTypes(db))
