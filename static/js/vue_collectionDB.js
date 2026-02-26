@@ -111,7 +111,10 @@ createApp({
     data() {
         return {
             MediaTypes: [],
-            CaseTypes: []
+            CaseTypes: [],
+            Categories: [],
+            Genres: [],
+            Publishers: []
         }
     },
     methods: {
@@ -133,8 +136,35 @@ createApp({
                 console.error("Fehler beim Laden der Case Types:", error);
             }
         },
+        async fetchCategories() {
+            try {
+                const response = await fetch('/api/v1/categories');
+                const data = await response.json();
+                this.Categories = data.data.Categories || [];
+            } catch (error) {
+                console.error("Fehler beim Laden der Categories:", error);
+            }
+        },
+        async fetchGenres() {
+            try {
+                const response = await fetch('/api/v1/genres');
+                const data = await response.json();
+                this.Genres = data.data.Genres || [];
+            } catch (error) {
+                console.error("Fehler beim Laden der Genres:", error);
+            }
+        },
+        async fetchPublisher() {
+            try {
+                const response = await fetch('/api/v1/publishers');
+                const data = await response.json();
+                this.Publishers = data.data.Publishers || [];
+            } catch (error) {
+                console.error("Fehler beim Laden der Publishers:", error);
+            }
+        },
         async deletething(id, name, type) {
-            if (!confirm(`Realy delete ${type} ${name}?`)) return;
+            if (!confirm(`Really delete ${type} ${name}?`)) return;
                 try {
                     const response = await fetch(`/api/v1/${type}/${id}`, {
                         method: 'DELETE',
@@ -148,7 +178,16 @@ createApp({
                             this.fetchCaseTypes();
                         } 
                         else if (type === "mediatype") {
-                            this.fetchMediaType();
+                            this.fetchMediaTypes();
+                        }
+                        else if (type === "category") {
+                            this.fetchCategories();
+                        }
+                        else if (type === "genre") {
+                            this.fetchGenres();
+                        }
+                        else if (type === "publisher") {
+                            this.fetchPublishers();
                         }
                     }
                     else {
@@ -165,6 +204,9 @@ createApp({
     mounted() {
         this.fetchMediaTypes();
         this.fetchCaseTypes();
+        this.fetchCategories();
+        this.fetchGenres();
+        this.fetchPublisher();
     }
 }) .mount('#stock');
 

@@ -229,11 +229,6 @@ func initDB(databasefile string) {
 		log.Fatal(err)
 	}
 }
-func ShowIndex(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{})
-	}
-}
 func GetCollections(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		collections := collect.ListCollections(db)
@@ -250,38 +245,59 @@ func GetEntries(db *sql.DB) gin.HandlerFunc {
 		})
 	}
 }
-func ShowStock(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.HTML(http.StatusOK, "stock/index.html", gin.H{})
-	}
-}
 func GetCaseTypes(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		casetypes := stockdata.ListCaseTypes(db)
 		answer := gin.H{
 			"Status":  http.StatusOK,
 			"Message": "Successfully loaded Case Types",
 			"data": gin.H{
-				"CaseTypes": casetypes},
+				"CaseTypes": stockdata.ListCaseTypes(db)},
 		}
 		c.JSON(http.StatusOK, answer)
 	}
 }
 func GetMediaTypes(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		mediatypes := stockdata.ListMediaTypes(db)
 		answer := gin.H{
 			"Status":  http.StatusOK,
 			"Message": "Successfully loaded Media Types",
 			"data": gin.H{
-				"MediaTypes": mediatypes},
+				"MediaTypes": stockdata.ListMediaTypes(db)},
 		}
 		c.JSON(http.StatusOK, answer)
 	}
 }
-func ShowAbout() gin.HandlerFunc {
+func GetCategories(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.HTML(http.StatusOK, "about.html", gin.H{})
+		answer := gin.H{
+			"Status":  http.StatusOK,
+			"Message": "Successfully loaded Categories",
+			"data": gin.H{
+				"Categories": stockdata.ListCategories(db)},
+		}
+		c.JSON(http.StatusOK, answer)
+	}
+}
+func GetGenres(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		answer := gin.H{
+			"Status":  http.StatusOK,
+			"Message": "Successfully loaded Genres",
+			"data": gin.H{
+				"Genres": stockdata.ListGenres(db)},
+		}
+		c.JSON(http.StatusOK, answer)
+	}
+}
+func GetPublishers(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		answer := gin.H{
+			"Status":  http.StatusOK,
+			"Message": "Successfully loaded Categories",
+			"data": gin.H{
+				"Publishers": stockdata.ListPublishers(db)},
+		}
+		c.JSON(http.StatusOK, answer)
 	}
 }
 func GetAbout(db *sql.DB) gin.HandlerFunc {
@@ -296,7 +312,21 @@ func GetAbout(db *sql.DB) gin.HandlerFunc {
 		c.JSON(http.StatusOK, answer)
 	}
 }
-
+func ShowStock() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.HTML(http.StatusOK, "stock/index.html", gin.H{})
+	}
+}
+func ShowIndex() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	}
+}
+func ShowAbout() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.HTML(http.StatusOK, "about.html", gin.H{})
+	}
+}
 func main() {
 	config := small.Configure()
 	initDB(config.Database)
@@ -313,8 +343,8 @@ func main() {
 	templates := fmt.Sprintf("%s/templates/**/*.html", config.Static)
 	router.LoadHTMLGlob(templates)
 	// Browser
-	router.GET("/", ShowIndex(db))
-	router.GET("/stock", ShowStock(db))
+	router.GET("/", ShowIndex())
+	router.GET("/stock", ShowStock())
 	router.GET("/about", ShowAbout())
 	router.POST("/stock/mediatype/create", stockdata.CreateMediaType(db))
 	router.POST("/stock/casetype/create", stockdata.CreateCaseType(db))
@@ -339,6 +369,9 @@ func main() {
 	router.GET("/api/v1/collections", GetCollections(db))
 	router.GET("/api/v1/casetypes", GetCaseTypes(db))
 	router.GET("/api/v1/mediatypes", GetMediaTypes(db))
+	router.GET("/api/v1/categories", GetCategories(db))
+	router.GET("/api/v1/genres", GetGenres(db))
+	router.GET("/api/v1/publishers", GetPublishers(db))
 	router.DELETE("/api/v1/collection/:id", collect.DeleteCollection(db))
 	router.DELETE("/api/v1/entry/:id", entries.DeleteEntry(db))
 	router.DELETE("/api/v1/mediatype/:id", stockdata.DeleteMediaType(db))
