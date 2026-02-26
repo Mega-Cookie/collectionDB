@@ -231,18 +231,24 @@ func initDB(databasefile string) {
 }
 func GetCollections(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		collections := collect.ListCollections(db)
-		c.JSON(http.StatusOK, gin.H{
-			"Collections": collections,
-		})
+		answer := gin.H{
+			"Status":  http.StatusOK,
+			"Message": "Successfully loaded Collections",
+			"data": gin.H{
+				"Collections": collect.ListCollections(db)},
+		}
+		c.JSON(http.StatusOK, answer)
 	}
 }
 func GetEntries(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		entries := entries.ListEntries(db)
-		c.JSON(http.StatusOK, gin.H{
-			"Entries": entries,
-		})
+		answer := gin.H{
+			"Status":  http.StatusOK,
+			"Message": "Successfully loaded Entries",
+			"data": gin.H{
+				"Entries": entries.ListEntries(db)},
+		}
+		c.JSON(http.StatusOK, answer)
 	}
 }
 func GetCaseTypes(db *sql.DB) gin.HandlerFunc {

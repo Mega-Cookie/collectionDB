@@ -36,7 +36,7 @@ createApp({
             try {
                 const response = await fetch('/api/v1/collections');
                 const data = await response.json();
-                this.Collections = data.Collections || [];
+                this.Collections = data.data.Collections || [];
             } catch (error) {
                 console.error("Fehler beim Laden der Collections:", error);
             }
@@ -45,7 +45,7 @@ createApp({
             try {
                 const response = await fetch('/api/v1/entries');
                 const data = await response.json();
-                this.Entries = data.Entries || [];
+                this.Entries = data.data.Entries || [];
             } catch (error) {
                 console.error("Fehler beim Laden der Entries:", error);
             }
