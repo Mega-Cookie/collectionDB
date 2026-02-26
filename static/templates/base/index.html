@@ -18,7 +18,7 @@
                           <span class="ml-1 text-xs bg-green-200">Entries: [[ col.entrycount ]]</span>
                       </div>
                       <p class="text-sm text-gray-500">[[ col.description ]]</p>
-                      <button @click="deletething(col.collectionID, col.name, 'collections')" class="bg-orange-200">Delete</button>
+                      <button @click="deletething(col.collectionID, col.name, 'collection')" class="bg-orange-200">Delete</button>
                   </div>
               </div>
           </div>
@@ -34,7 +34,7 @@
                           <a :href="'/entries/' + ent.entryID" class="text-xl font-semibold">[[ ent.title ]]</a>
                       </div>
                       <p class="text-sm text-gray-500">[[ ent.plot ]]</p>
-                      <button @click="deletething(ent.entryID, ent.title, 'entries')" class="bg-orange-200">Delete</button>
+                      <button @click="deletething(ent.entryID, ent.title, 'entry')" class="bg-orange-200">Delete</button>
                   </div>
               </div>
           </div>
