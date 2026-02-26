@@ -302,12 +302,11 @@ func GetPublishers(db *sql.DB) gin.HandlerFunc {
 }
 func GetAbout(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		systeminfo := small.GetSystemInfo(db)
 		answer := gin.H{
 			"Status":  http.StatusOK,
 			"Message": "Successfully loaded Systeminfo",
 			"data": gin.H{
-				"Info": systeminfo},
+				"Info": small.GetSystemInfo(db)},
 		}
 		c.JSON(http.StatusOK, answer)
 	}
