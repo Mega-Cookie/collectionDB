@@ -123,3 +123,27 @@ func GetSystemInfo(db *sql.DB) (systeminfo systeminfo) {
 	response.Scan(&systeminfo.ID, &systeminfo.Version, &systeminfo.Hostname, &systeminfo.OS, &systeminfo.Arch, &systeminfo.GoVersion, &systeminfo.SQLiteVersion, &systeminfo.Timezone)
 	return
 }
+func SetStockData(db *sql.DB) {
+	var err error
+	_, err = db.Exec(`INSERT OR IGNORE INTO categories (NAME, DESCRIPTION)
+					VALUES
+					('No Category', 'This is the default category if no other category is selected');
+					INSERT OR IGNORE INTO genres (NAME, DESCRIPTION)
+					VALUES
+					('No Genre', 'This is the default genry if no other genre is selected');
+					INSERT OR IGNORE INTO publishers (NAME, DESCRIPTION)
+					VALUES
+					('No Publisher', 'This is the default publisher if no other publisher is selected');
+					INSERT OR IGNORE INTO casetypes (NAME, DESCRIPTION)
+					VALUES
+					('No Case', 'This is the default casetype if no other casetype is selected');
+					INSERT OR IGNORE INTO mediatypes (NAME, DESCRIPTION)
+					VALUES
+					('Default', 'This is the default mediatype if no other mediatype is selected');
+					INSERT OR IGNORE INTO collections (NAME, DESCRIPTION)
+					VALUES
+					('Default', 'This is the default collection if no other collection is selected');`)
+	if err != nil {
+		log.Fatal(err)
+	}
+}

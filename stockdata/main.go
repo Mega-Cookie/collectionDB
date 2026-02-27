@@ -10,34 +10,34 @@ import (
 )
 
 type MediaTypes struct {
-	ID        int       `json:"mediatypeid"`
-	Name      string    `json:"name"`
-	IsStock   bool      `json:"is_stock"`
-	CreatedAt time.Time `json:"created_at"`
+	ID          int       `json:"mediatypeid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 type Categories struct {
-	ID        int       `json:"catid"`
-	Name      string    `json:"name"`
-	IsStock   bool      `json:"is_stock"`
-	CreatedAt time.Time `json:"created_at"`
+	ID          int       `json:"catid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 type Genres struct {
-	ID        int       `json:"genreid"`
-	Name      string    `json:"name"`
-	IsStock   bool      `json:"is_stock"`
-	CreatedAt time.Time `json:"created_at"`
+	ID          int       `json:"genreid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 type CaseTypes struct {
-	ID        int       `json:"casetypeid"`
-	Name      string    `json:"name"`
-	IsStock   bool      `json:"is_stock"`
-	CreatedAt time.Time `json:"created_at"`
+	ID          int       `json:"casetypeid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 type Publishers struct {
-	ID        int       `json:"publisherid"`
-	Name      string    `json:"name"`
-	IsStock   bool      `json:"is_stock"`
-	CreatedAt time.Time `json:"created_at"`
+	ID          int       `json:"publisherid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func ListMediaTypes(db *sql.DB) (mediatypes []MediaTypes) {
@@ -48,7 +48,7 @@ func ListMediaTypes(db *sql.DB) (mediatypes []MediaTypes) {
 	defer rows.Close()
 	for rows.Next() {
 		var mediatype MediaTypes
-		rows.Scan(&mediatype.ID, &mediatype.Name, &mediatype.IsStock, &mediatype.CreatedAt)
+		rows.Scan(&mediatype.ID, &mediatype.Name, &mediatype.Description, &mediatype.CreatedAt)
 		mediatypes = append(mediatypes, mediatype)
 	}
 	return
@@ -61,7 +61,7 @@ func ListCaseTypes(db *sql.DB) (casetypes []CaseTypes) {
 	defer rows.Close()
 	for rows.Next() {
 		var casetype CaseTypes
-		rows.Scan(&casetype.ID, &casetype.Name, &casetype.IsStock, &casetype.CreatedAt)
+		rows.Scan(&casetype.ID, &casetype.Name, &casetype.Description, &casetype.CreatedAt)
 		casetypes = append(casetypes, casetype)
 	}
 	return
@@ -75,7 +75,7 @@ func ListCategories(db *sql.DB) (categories []Categories) {
 	defer rows.Close()
 	for rows.Next() {
 		var category Categories
-		rows.Scan(&category.ID, &category.Name, &category.IsStock, &category.CreatedAt)
+		rows.Scan(&category.ID, &category.Name, &category.Description, &category.CreatedAt)
 		categories = append(categories, category)
 	}
 	return
@@ -89,7 +89,7 @@ func ListPublishers(db *sql.DB) (publishers []Publishers) {
 	defer rows.Close()
 	for rows.Next() {
 		var publisher Publishers
-		rows.Scan(&publisher.ID, &publisher.Name, &publisher.IsStock, &publisher.CreatedAt)
+		rows.Scan(&publisher.ID, &publisher.Name, &publisher.Description, &publisher.CreatedAt)
 		publishers = append(publishers, publisher)
 	}
 	return
@@ -103,7 +103,7 @@ func ListGenres(db *sql.DB) (genres []Genres) {
 	defer rows.Close()
 	for rows.Next() {
 		var genre Genres
-		rows.Scan(&genre.ID, &genre.Name, &genre.IsStock, &genre.CreatedAt)
+		rows.Scan(&genre.ID, &genre.Name, &genre.Description, &genre.CreatedAt)
 		genres = append(genres, genre)
 	}
 	return
