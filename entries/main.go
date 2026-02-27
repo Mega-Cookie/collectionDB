@@ -268,10 +268,10 @@ func EditEntry(db *sql.DB) gin.HandlerFunc {
 		c.Redirect(http.StatusFound, "/")
 	}
 }
-func ShowEntry() gin.HandlerFunc {
+func ViewEntry() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Header("Cache-Control", "no-store")
-		c.HTML(http.StatusOK, "entries/view.html", gin.H{})
+		c.HTML(http.StatusOK, "entries/view.html", gin.H{"id": c.Param("id")})
 	}
 }
 func Get(db *sql.DB, id string) (entry Entry) {

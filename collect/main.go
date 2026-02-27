@@ -100,21 +100,9 @@ func EditCollection(db *sql.DB) gin.HandlerFunc {
 		c.Redirect(http.StatusFound, "/")
 	}
 }
-func ViewCollection(db *sql.DB) gin.HandlerFunc {
+func ViewCollection() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		id := c.Param("id")
-		var collection Collection
-		query := "SELECT c.*, ca.NAME AS CATNAME FROM collections c LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID WHERE c.collectionID = ?"
-		err := db.QueryRow(query, id).Scan(&collection.ID, &collection.Name, &collection.Description, &collection.Category.ID, &collection.CreatedAt, &collection.EditedAt, &collection.Category.Name)
-		if err != nil {
-			c.HTML(http.StatusNotFound, "collections/404.html", nil)
-			fmt.Println(err)
-			return
-		}
-		collection.CreatedAt = small.SetTime(db, &collection.CreatedAt)
-		collection.EditedAt = small.SetTime(db, &collection.EditedAt)
-		c.Header("Cache-Control", "no-store")
-		c.HTML(http.StatusOK, "collections/view.html", collection)
+		c.HTML(http.StatusOK, "collections/view.html", gin.H{"id": c.Param("id")})
 	}
 }
 func DeleteCollection(db *sql.DB) gin.HandlerFunc {
@@ -133,4 +121,25 @@ func DeleteCollection(db *sql.DB) gin.HandlerFunc {
 		}
 		c.JSON(http.StatusOK, gin.H{"message": "Collection successfully deleted", "id": id})
 	}
+}
+
+func Get(db *sql.DB, id string) (collection Collection) {
+	query := `SELECT c.*, count(e.collectionID) AS ENTRYCOUNT, ca.NAME AS CATNAME 
+			FROM collections c
+			LEFT OUTER JOIN categories ca ON ca.categoryID = c.categoryID
+			LEFT OUTER JOIN entries e ON c.collectionID = e.collectionID
+			WHERE c.collectionID = ?`
+	response := db.QueryRow(query, id)
+	response.Scan(
+		&collection.ID,
+		&collection.Name,
+		&collection.Description,
+		&collection.Category.ID,
+		&collection.CreatedAt,
+		&collection.EditedAt,
+		&collection.Entrycount,
+		&collection.Category.Name)
+	collection.CreatedAt = small.SetTime(db, &collection.CreatedAt)
+	collection.EditedAt = small.SetTime(db, &collection.EditedAt)
+	return
 }

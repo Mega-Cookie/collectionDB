@@ -340,6 +340,29 @@ func GetEntry(db *sql.DB) gin.HandlerFunc {
 		}
 	}
 }
+func GetCollection(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		collection := collect.Get(db, id)
+		if collection.Name == "" {
+			answer := gin.H{
+				"Status":  http.StatusNotFound,
+				"Message": "Entry not found.",
+				"data": gin.H{
+					"collectionID": id},
+			}
+			c.JSON(http.StatusNotFound, answer)
+		} else {
+			answer := gin.H{
+				"Status":  http.StatusOK,
+				"Message": "Successfully loaded Entry",
+				"data": gin.H{
+					"Collection": collection},
+			}
+			c.JSON(http.StatusOK, answer)
+		}
+	}
+}
 func ShowStock() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.HTML(http.StatusOK, "stock/index.html", gin.H{})
@@ -382,12 +405,12 @@ func main() {
 	router.DELETE("/publisher/:id/delete", stockdata.DeletePublisher(db))
 	router.DELETE("/category/:id/delete", stockdata.DeleteCategory(db))
 	router.DELETE("/genre/:id/delete", stockdata.DeleteGenre(db))
-	router.GET("/entry/:id", entries.ShowEntry())
+	router.GET("/entry/:id", entries.ViewEntry())
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
 	router.GET("/entries/:id/edit", entries.ShowEditEntryPage(db))
 	router.POST("/entries/:id/edit", entries.EditEntry(db))
-	router.GET("/collections/:id", collect.ViewCollection(db))
+	router.GET("/collection/:id", collect.ViewCollection())
 	router.GET("/create_collection", collect.ShowCreateCollectionPage(db))
 	router.POST("/create_collection", collect.CreateCollection(db))
 	router.GET("/collections/:id/edit", collect.ShowEditCollectionPage(db))
@@ -395,6 +418,7 @@ func main() {
 	// API
 	router.GET("/api/v1/entries", GetEntries(db))
 	router.GET("/api/v1/entry/:id", GetEntry(db))
+	router.GET("/api/v1/collection/:id", GetCollection(db))
 	router.GET("/api/v1/collections", GetCollections(db))
 	router.GET("/api/v1/casetypes", GetCaseTypes(db))
 	router.GET("/api/v1/mediatypes", GetMediaTypes(db))
