@@ -1,23 +1,23 @@
 {{define "collections/view.html"}}
 {{template "header.html"}}
-<div style="margin-left:150px;padding:1px 16px;height:1000px;">
+<div id="collection" data-id="{{ .id }}" style="margin-left:150px;padding:1px 16px;height:1000px;">
       <div class="flex justify-between items-center mb-4 pb-4 border-b">
         <div>
-          <a class="text-3xl font-bold mb-4">{{.Name}}</a>  
+          <a class="text-3xl font-bold mb-4">[[ Collection.name ]]</a>  
         </div>
         <div>  
           <button>
-            <a class="mr-1 text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400" href="/collections/{{.ID}}/edit">Edit</a>
+            <a class="mr-1 text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400" href="/collections/{{ .id }}/edit">Edit</a>
           </button>
           <button>
             <a href="/" class= "ml-1 text-lg bg-red-200 text-red-800 py-2 px-2 rounded-md border-2 border-red-800 hover:bg-red-400">Go back</a>
           </button>
         </div>
       </div>
-      <p class="text-lg text-gray-700 mt-6 mb-6">Category: {{.Category.Name}}</p>
+      <p class="text-lg text-gray-700 mt-6 mb-6">Category: [[ Collection.Category.catname ]]</p>
       <h1 class="text-xl font-bold mb-1">Description</h1>          
-      <p class="text-lg text-gray-700 mt-10 mb-6">{{.Description}}</p>
-      <p class="text-sm text-gray-500"><em>Created on: {{.CreatedAt}} - Edited on: {{.EditedAt}}</em></p>
+      <p class="text-lg text-gray-700 mt-10 mb-6">[[ Collection.description ]]</p>
+      <p class="text-sm text-gray-500"><em>Created on: [[ Collection.created_at ]] - Edited on: [[ Collection.edited_at ]]</em></p>
   </div>
 {{template "footer.html"}}
 {{end}}

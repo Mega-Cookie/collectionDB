@@ -13,7 +13,7 @@
               <div v-else class="grid gap-2">
                   <div v-for="col in Collections" :key="col.collectionID" class="collection-card bg-white p-4 border-2">
                       <div class="flex items-center">
-                          <a :href="'/collections/' + col.collectionID" class="text-xl font-semibold">[[ col.name ]]</a>
+                          <a :href="'/collection/' + col.collectionID" class="text-xl font-semibold">[[ col.name ]]</a>
                           <span class="ml-auto text-xs bg-blue-200">[[ col.Category.catname ]]</span>
                           <span class="ml-1 text-xs bg-green-200">Entries: [[ col.entrycount ]]</span>
                       </div>
@@ -31,7 +31,7 @@
               <div v-else class="grid gap-2">
                   <div v-for="ent in Entries" :key="ent.entryID" class="entry-card bg-white p-4 border-2">
                       <div class="flex items-center">
-                          <a :href="'/entries/' + ent.entryID" class="text-xl font-semibold">[[ ent.title ]]</a>
+                          <a :href="'/entry/' + ent.entryID" class="text-xl font-semibold">[[ ent.title ]]</a>
                       </div>
                       <p class="text-sm text-gray-500">[[ ent.plot ]]</p>
                       <button @click="deletething(ent.entryID, ent.title, 'entry')" class="bg-orange-200">Delete</button>
