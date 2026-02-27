@@ -268,56 +268,54 @@ func EditEntry(db *sql.DB) gin.HandlerFunc {
 		c.Redirect(http.StatusFound, "/")
 	}
 }
-func ViewEntry(db *sql.DB) gin.HandlerFunc {
+func ViewEntry() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		id := c.Param("id")
-		var entry Entry
-		query := `SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME, ct.NAME AS CASETYPENAME, p.NAME AS PUBNAME
-				FROM entries e
-				LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID
-				LEFT OUTER JOIN genres g ON e.genreID = g.genreID
-				LEFT OUTER JOIN mediatypes mt ON e.mediatypeID = mt.mediatypeID
-				LEFT OUTER JOIN casetypes ct ON e.casetypeID = ct.casetypeID
-				LEFT OUTER JOIN publishers p ON e.publisherID = p.publisherID
-				WHERE e.entryID = ?`
-		err := db.QueryRow(query, id).Scan(
-			&entry.ID,
-			&entry.Title,
-			&entry.Year,
-			&entry.Plot,
-			&entry.Comment,
-			&entry.AudioLangs,
-			&entry.SubLangs,
-			&entry.Released,
-			&entry.MediaCount,
-			&entry.IsDigital,
-			&entry.IsBooklet,
-			&entry.RegionCode,
-			&entry.BarCode,
-			&entry.Collection.ID,
-			&entry.Genre.ID,
-			&entry.MediaType.ID,
-			&entry.CaseType.ID,
-			&entry.Publisher.ID,
-			&entry.ImdbID,
-			&entry.CreatedAt,
-			&entry.EditedAt,
-			&entry.Collection.Name,
-			&entry.Genre.Name,
-			&entry.MediaType.Name,
-			&entry.CaseType.Name,
-			&entry.Publisher.Name)
-		if err != nil {
-			c.HTML(http.StatusNotFound, "entries/404.html", nil)
-			fmt.Println(err)
-			return
-		}
-		entry.CreatedAt = small.SetTime(db, &entry.CreatedAt)
-		entry.EditedAt = small.SetTime(db, &entry.EditedAt)
 		c.Header("Cache-Control", "no-store")
-		c.HTML(http.StatusOK, "entries/view.html", entry)
+		c.HTML(http.StatusOK, "entries/view.html", gin.H{"id": c.Param("id")})
 	}
 }
+func Get(db *sql.DB, id string) (entry Entry) {
+	querry := `SELECT e.*, c.NAME AS COLLNAME, g.NAME AS GENRENAME, mt.NAME AS MEDIATYPENAME, ct.NAME AS CASETYPENAME, p.NAME AS PUBNAME
+				FROM entries e
+				LEFT OUTER JOIN collections c ON e.collectionID = c.collectionID
+				LEFT OUTER JOIN genres g ON e.genreID = g.genreID  
+				LEFT OUTER JOIN mediatypes mt ON e.mediatypeID = mt.mediatypeID 
+				LEFT OUTER JOIN casetypes ct on e.casetypeID = ct.casetypeID
+				LEFT OUTER JOIN publishers p ON e.publisherID = p.publisherID 
+				WHERE entryID = ?`
+	response := db.QueryRow(querry, id)
+	response.Scan(
+		&entry.ID,
+		&entry.Title,
+		&entry.Year,
+		&entry.Plot,
+		&entry.Comment,
+		&entry.AudioLangs,
+		&entry.SubLangs,
+		&entry.Released,
+		&entry.MediaCount,
+		&entry.IsDigital,
+		&entry.IsBooklet,
+		&entry.RegionCode,
+		&entry.BarCode,
+		&entry.Collection.ID,
+		&entry.Genre.ID,
+		&entry.MediaType.ID,
+		&entry.CaseType.ID,
+		&entry.Publisher.ID,
+		&entry.ImdbID,
+		&entry.CreatedAt,
+		&entry.EditedAt,
+		&entry.Collection.Name,
+		&entry.Genre.Name,
+		&entry.MediaType.Name,
+		&entry.CaseType.Name,
+		&entry.Publisher.Name)
+	entry.CreatedAt = small.SetTime(db, &entry.CreatedAt)
+	entry.EditedAt = small.SetTime(db, &entry.EditedAt)
+	return
+}
+
 func DeleteEntry(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
