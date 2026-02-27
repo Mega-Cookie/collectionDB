@@ -110,11 +110,11 @@ createApp({
     delimiters: ['[[', ']]'],
     data() {
         return {
-            MediaTypes: [],
-            CaseTypes: [],
-            Categories: [],
-            Genres: [],
-            Publishers: []
+            MediaTypes: {},
+            CaseTypes: {},
+            Categories: {},
+            Genres: {},
+            Publishers: {}
         }
     },
     methods: {
@@ -209,6 +209,63 @@ createApp({
         this.fetchPublisher();
     }
 }) .mount('#stock');
+
+createApp({
+    delimiters: ['[[', ']]'],
+    data() {
+        return {
+            Collection: {
+                Category: {}
+            }
+        }
+    },
+    methods: {
+        async fetchCollection(id) {
+            try {
+                const response = await fetch(`/api/v1/collection/${id}`);
+                const data = await response.json();
+                this.Collection = data.data.Collection || [];
+            } catch (error) {
+                console.error("Fehler beim Laden der Collection:", error);
+            }
+        }
+    },
+    mounted() {
+        const el = document.querySelector('#collection');
+        const id = el.dataset.id;
+        this.fetchCollection(id);
+    }
+}) .mount('#collection');
+createApp({
+    delimiters: ['[[', ']]'],
+    data() {
+        return {
+            Entry: {
+                MediaType: {},
+                CaseType: {},
+                Collection: {},
+                Genre: {},
+                Publisher: {}
+            }
+        }
+    },
+    methods: {
+        async fetchEntry(id) {
+            try {
+                const response = await fetch(`/api/v1/entry/${id}`);
+                const data = await response.json();
+                this.Entry = data.data.Entry || [];
+            } catch (error) {
+                console.error("Fehler beim Laden des Entry:", error);
+            }
+        }
+    },
+    mounted() {
+        const el = document.querySelector('#entry');
+        const id = el.dataset.id;
+        this.fetchEntry(id);
+    }
+}) .mount('#entry');
 
 document.addEventListener('click', async function(e) {
     if (e.target.classList.contains('delete-stock-btn')) {
