@@ -1,43 +1,51 @@
 {{template "header.html"}}
 <div id="index" v-cloak style="margin-left:150px;padding:1px 16px;height:1000px;">
     <div class="mx-auto p-4 grid grid-cols-2 gap-2 flex">
-      <a v-if="Collections.length === 0" href="/create_collection" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create First Collection</a>
-      <a v-else href="/create_collection" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create New Collection</a>
-      <a v-if="Entries.length === 0" href="/create_entry" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create First Entry</a>
-      <a v-else href="/create_entry" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create New Entry</a>
-      <div style="margin-left:150px;padding:1px 16px;height:1000px;">
-          <div class="mx-auto p-4 grid grid-cols-2 gap-2 flex">
-              <div v-if="Collections.length === 0" class="flex">
-                Keine Collections vorhanden.
-              </div>
-              <div v-else class="grid gap-2">
-                  <div v-for="col in Collections" :key="col.collectionID" class="collection-card bg-white p-4 border-2">
-                      <div class="flex items-center">
-                          <a :href="'/collection/' + col.collectionID" class="text-xl font-semibold">[[ col.name ]]</a>
-                          <span class="ml-auto text-xs bg-blue-200">[[ col.Category.catname ]]</span>
-                          <span class="ml-1 text-xs bg-green-200">Entries: [[ col.entrycount ]]</span>
-                      </div>
-                      <p class="text-sm text-gray-500">[[ col.description ]]</p>
-                      <button @click="deletething(col.collectionID, col.name, 'collection')" class="bg-orange-200">Delete</button>
-                  </div>
-              </div>
-          </div>
-      </div>
-      <div style="margin-left:150px;padding:1px 16px;height:1000px;">
-          <div class="mx-auto p-4 grid grid-cols-2 gap-2 flex">
-              <div v-if="Entries.length === 0" class="flex mx-auto">
-                <a>Keine Einträge vorhanden.</a>
-              </div>
-              <div v-else class="grid gap-2">
-                  <div v-for="ent in Entries" :key="ent.entryID" class="entry-card bg-white p-4 border-2">
-                      <div class="flex items-center">
-                          <a :href="'/entry/' + ent.entryID" class="text-xl font-semibold">[[ ent.title ]]</a>
-                      </div>
-                      <p class="text-sm text-gray-500">[[ ent.plot ]]</p>
-                      <button @click="deletething(ent.entryID, ent.title, 'entry')" class="bg-orange-200">Delete</button>
-                  </div>
-              </div>
-          </div>
-      </div>
+        <a v-if="Collections.length === 0" href="/create_collection" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create First Collection</a>
+        <a v-else href="/create_collection" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create New Collection</a>
+        <a v-if="Entries.length === 0" href="/create_entry" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create First Entry</a>
+        <a v-else href="/create_entry" class="mx-auto text-lg bg-blue-200 text-blue-800 py-2 px-2 rounded-md border-2 border-blue-800 hover:bg-blue-400">Create New Entry</a>
+        <div style="padding:1px 16px;height:1000px;">
+            <div class="mx-auto p-4">
+                <div v-if="Collections.length === 0">
+                <a>Keine Collections vorhanden.</a>
+                </div>
+                <div v-else>
+                    <div v-for="col in Collections" :key="col.collectionID" class="rounded-md bg-white mb-1 p-4 border-2">
+                        <div class="flex justify-between items-center">
+                        <div>
+                            <div><a :href="'/collection/' + col.collectionID" class="text-xl font-semibold">[[ col.name ]]</a></div>
+                            <div class="text-sm text-gray-500">[[ col.description ]]</div>
+                        </div>
+                        <div>
+                            <div class="rounded-md border-2 border-blue-800 text-blue-800 p-2 text-xs bg-blue-200">[[ col.Category.catname ]]</div>
+                            <div class="rounded-md border-2 border-green-800 text-green-800 p-2 text-xs bg-green-200">Entries: [[ col.entrycount ]]</div>
+                            <div><button @click="deletething(col.collectionID, col.name, 'collection')" class="rounded-md border-2 p-2 text-xs bg-orange-200 hover:bg-orange-400">Delete</button></div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:1px 16px;height:1000px;">
+            <div class="mx-auto p-4">
+                <div v-if="Entries.length === 0" class="flex mx-auto">
+                    <a>Keine Einträge vorhanden.</a>
+                </div>
+                <div v-else>
+                    <div v-for="ent in Entries" :key="ent.entryID" class="rounded-md bg-white mb-1 p-4 border-2">   
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div><a :href="'/entry/' + ent.entryID" class="text-xl font-semibold">[[ ent.title ]]</a></div>
+                                <div class="text-sm text-gray-500">[[ ent.plot ]]</div>
+                            </div>
+                            <div>
+                                <div><button @click="deletething(ent.entryID, ent.title, 'entry')" class="rounded-md border-2 p-2 text-xs bg-orange-200 hover:bg-orange-400">Delete</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {{template "footer.html"}}
