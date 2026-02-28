@@ -12,12 +12,12 @@
                 </div>
                 <div v-else>
                     <div v-for="col in Collections" :key="col.collectionID" class="rounded-md bg-white mb-1 p-4 border-2">
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between">
                         <div>
                             <div><a :href="'/collection/' + col.collectionID" class="text-xl font-semibold">[[ col.name ]]</a></div>
                             <div class="text-sm text-gray-500">[[ col.description ]]</div>
                         </div>
-                        <div>
+                        <div class="grid justify-items-stretch">
                             <div class="rounded-md border-2 border-blue-800 text-blue-800 p-2 text-xs bg-blue-200">[[ col.Category.catname ]]</div>
                             <div class="rounded-md border-2 border-green-800 text-green-800 p-2 text-xs bg-green-200">Entries: [[ col.entrycount ]]</div>
                             <div><button @click="deletething(col.collectionID, col.name, 'collection')" class="rounded-md border-2 p-2 text-xs bg-orange-200 hover:bg-orange-400">Delete</button></div>
@@ -34,13 +34,32 @@
                 </div>
                 <div v-else>
                     <div v-for="ent in Entries" :key="ent.entryID" class="rounded-md bg-white mb-1 p-4 border-2">   
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between">
                             <div>
                                 <div><a :href="'/entry/' + ent.entryID" class="text-xl font-semibold">[[ ent.title ]]</a></div>
-                                <div class="text-sm text-gray-500">[[ ent.plot ]]</div>
+                                <div>
+                                    <p class="text-justify text-sm text-gray-500">[[ ent.plot ]]</p>
+                                </div>
                             </div>
-                            <div>
-                                <div><button @click="deletething(ent.entryID, ent.title, 'entry')" class="rounded-md border-2 p-2 text-xs bg-orange-200 hover:bg-orange-400">Delete</button></div>
+                            <div class="grid justify-items-stretch">
+                                <div v-if="ent.is_booklet === true">
+                                    <div class="flex rounded-md border-2 border-green-800 text-green-800 p-2 text-xs bg-green-200">Booklet</div>
+                                </div>
+                                <div v-else>
+                                    <div class="flex rounded-md border-2 border-red-800 text-red-800 p-2 text-xs bg-red-200">No Booklet</div>
+                                </div>
+                                <div v-if="ent.is_digital === true">
+                                    <div class="flex rounded-md border-2 border-green-800 text-green-800 p-2 text-xs bg-green-200">Digital</div>
+                                </div>
+                                <div v-else>
+                                    <div class="flex rounded-md border-2 border-red-800 text-red-800 p-2 text-xs bg-red-200">Not Digital</div>
+                                </div>
+                                <div>
+                                    <div class="flex rounded-md border-2 border-blue-800 text-blue-800 p-2 text-xs bg-blue-200">[[ ent.Collection.collname ]]</div>
+                                </div>
+                                <div>
+                                    <button @click="deletething(ent.entryID, ent.title, 'entry')" class="flex rounded-md border-2 p-2 text-xs bg-orange-200 hover:bg-orange-400">Delete</button>
+                                </div>
                             </div>
                         </div>
                     </div>
