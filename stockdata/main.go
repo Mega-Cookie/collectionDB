@@ -48,7 +48,10 @@ func ListMediaTypes(db *sql.DB) (mediatypes []MediaTypes) {
 	defer rows.Close()
 	for rows.Next() {
 		var mediatype MediaTypes
-		rows.Scan(&mediatype.ID, &mediatype.Name, &mediatype.Description, &mediatype.CreatedAt)
+		rows.Scan(&mediatype.ID,
+			&mediatype.Name,
+			&mediatype.Description,
+			&mediatype.CreatedAt)
 		mediatypes = append(mediatypes, mediatype)
 	}
 	return
@@ -61,7 +64,10 @@ func ListCaseTypes(db *sql.DB) (casetypes []CaseTypes) {
 	defer rows.Close()
 	for rows.Next() {
 		var casetype CaseTypes
-		rows.Scan(&casetype.ID, &casetype.Name, &casetype.Description, &casetype.CreatedAt)
+		rows.Scan(&casetype.ID,
+			&casetype.Name,
+			&casetype.Description,
+			&casetype.CreatedAt)
 		casetypes = append(casetypes, casetype)
 	}
 	return
@@ -75,7 +81,10 @@ func ListCategories(db *sql.DB) (categories []Categories) {
 	defer rows.Close()
 	for rows.Next() {
 		var category Categories
-		rows.Scan(&category.ID, &category.Name, &category.Description, &category.CreatedAt)
+		rows.Scan(&category.ID,
+			&category.Name,
+			&category.Description,
+			&category.CreatedAt)
 		categories = append(categories, category)
 	}
 	return
@@ -89,7 +98,10 @@ func ListPublishers(db *sql.DB) (publishers []Publishers) {
 	defer rows.Close()
 	for rows.Next() {
 		var publisher Publishers
-		rows.Scan(&publisher.ID, &publisher.Name, &publisher.Description, &publisher.CreatedAt)
+		rows.Scan(&publisher.ID,
+			&publisher.Name,
+			&publisher.Description,
+			&publisher.CreatedAt)
 		publishers = append(publishers, publisher)
 	}
 	return
@@ -103,23 +115,13 @@ func ListGenres(db *sql.DB) (genres []Genres) {
 	defer rows.Close()
 	for rows.Next() {
 		var genre Genres
-		rows.Scan(&genre.ID, &genre.Name, &genre.Description, &genre.CreatedAt)
+		rows.Scan(&genre.ID,
+			&genre.Name,
+			&genre.Description,
+			&genre.CreatedAt)
 		genres = append(genres, genre)
 	}
 	return
-}
-func CreateMediaType(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		name := c.PostForm("name")
-		_, err := db.Exec(`INSERT INTO mediatypes (NAME) VALUES (?)`, name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create mediatype"})
-			fmt.Println(err)
-			return
-		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
-	}
 }
 func DeleteMediaType(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -136,19 +138,6 @@ func DeleteMediaType(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"message": "Media type successfully deleted", "id": id})
-	}
-}
-func CreateCaseType(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		name := c.PostForm("name")
-		_, err := db.Exec(`INSERT INTO casetypes (NAME) VALUES (?)`, name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create casetype"})
-			fmt.Println(err)
-			return
-		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
 	}
 }
 func DeleteCaseType(db *sql.DB) gin.HandlerFunc {
@@ -168,19 +157,6 @@ func DeleteCaseType(db *sql.DB) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"message": "Case type successfully deleted", "id": id})
 	}
 }
-func CreateCategory(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		name := c.PostForm("name")
-		_, err := db.Exec(`INSERT INTO categories (NAME) VALUES (?)`, name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create category"})
-			fmt.Println(err)
-			return
-		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
-	}
-}
 func DeleteCategory(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
@@ -198,19 +174,6 @@ func DeleteCategory(db *sql.DB) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"message": "Category successfully deleted", "id": id})
 	}
 }
-func CreatePublisher(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		name := c.PostForm("name")
-		_, err := db.Exec(`INSERT INTO publishers (NAME) VALUES (?)`, name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create publisher"})
-			fmt.Println(err)
-			return
-		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
-	}
-}
 func DeletePublisher(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
@@ -226,19 +189,6 @@ func DeletePublisher(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"message": "Publisher successfully deleted", "id": id})
-	}
-}
-func CreateGenre(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		name := c.PostForm("name")
-		_, err := db.Exec(`INSERT INTO genres (NAME) VALUES (?)`, name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create genre"})
-			fmt.Println(err)
-			return
-		}
-		c.Header("Cache-Control", "no-store")
-		c.Redirect(http.StatusFound, "/stock")
 	}
 }
 func DeleteGenre(db *sql.DB) gin.HandlerFunc {
