@@ -120,7 +120,14 @@ func SetTime(db *sql.DB, stamp *time.Time) (newstamp time.Time) {
 func GetSystemInfo(db *sql.DB) (systeminfo systeminfo) {
 	query := "SELECT * FROM info WHERE instanceID = 1"
 	response := db.QueryRow(query)
-	response.Scan(&systeminfo.ID, &systeminfo.Version, &systeminfo.Hostname, &systeminfo.OS, &systeminfo.Arch, &systeminfo.GoVersion, &systeminfo.SQLiteVersion, &systeminfo.Timezone)
+	response.Scan(&systeminfo.ID,
+		&systeminfo.Version,
+		&systeminfo.Hostname,
+		&systeminfo.OS,
+		&systeminfo.Arch,
+		&systeminfo.GoVersion,
+		&systeminfo.SQLiteVersion,
+		&systeminfo.Timezone)
 	return
 }
 func SetStockData(db *sql.DB) {

@@ -6,16 +6,56 @@ import (
 	"collectionDB/small"
 	"collectionDB/stockdata"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var db *sql.DB
+
+type MediaTypes struct {
+	ID          int       `json:"mediatypeid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+type Categories struct {
+	ID          int       `json:"catid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+type Genres struct {
+	ID          int       `json:"genreid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+type CaseTypes struct {
+	ID          int       `json:"casetypeid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+type Publishers struct {
+	ID          int       `json:"publisherid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+type StockRequest struct {
+	Data struct {
+		Name string `json:"name"`
+		Type string `json:"type"`
+	} `json:"data"`
+}
 
 func initDB(databasefile string) {
 	var err error
@@ -378,6 +418,41 @@ func ShowAbout() gin.HandlerFunc {
 		c.HTML(http.StatusOK, "about.html", gin.H{})
 	}
 }
+func PostStock(table string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var request StockRequest
+		if err := c.ShouldBindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  http.StatusBadRequest,
+				"message": err,
+				"request": request,
+			})
+			return
+		}
+		fmt.Println(request)
+		query := fmt.Sprintf("INSERT INTO %s (NAME) VALUES (?)", table)
+		_, err := db.Exec(query, request.Data.Name)
+		if err != nil {
+			var sqliteErr sqlite3.Error
+			if errors.As(err, &sqliteErr) {
+				if sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
+					message := fmt.Sprintf("The name '%s' is already in use.", request.Data.Name)
+					c.JSON(http.StatusInternalServerError, gin.H{
+						"status":  http.StatusInternalServerError,
+						"message": message,
+						"request": request,
+					})
+					return
+				}
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"status":  http.StatusOK,
+			"message": "Successfully created new stock data.",
+			"request": request,
+		})
+	}
+}
 func main() {
 	config := small.Configure()
 	initDB(config.Database)
@@ -397,14 +472,6 @@ func main() {
 	router.GET("/", ShowIndex())
 	router.GET("/stock", ShowStock())
 	router.GET("/about", ShowAbout())
-	router.POST("/stock/mediatype/create", stockdata.CreateMediaType(db))
-	router.POST("/stock/casetype/create", stockdata.CreateCaseType(db))
-	router.POST("/stock/publisher/create", stockdata.CreatePublisher(db))
-	router.POST("/stock/category/create", stockdata.CreateCategory(db))
-	router.POST("/stock/genre/create", stockdata.CreateGenre(db))
-	router.DELETE("/publisher/:id/delete", stockdata.DeletePublisher(db))
-	router.DELETE("/category/:id/delete", stockdata.DeleteCategory(db))
-	router.DELETE("/genre/:id/delete", stockdata.DeleteGenre(db))
 	router.GET("/entry/:id", entries.ViewEntry())
 	router.GET("/create_entry", entries.ShowCreateEntryPage(db))
 	router.POST("/create_entry", entries.CreateEntry(db))
@@ -418,17 +485,32 @@ func main() {
 	// API
 	router.GET("/api/v1/entries", GetEntries(db))
 	router.GET("/api/v1/entry/:id", GetEntry(db))
-	router.GET("/api/v1/collection/:id", GetCollection(db))
-	router.GET("/api/v1/collections", GetCollections(db))
-	router.GET("/api/v1/casetypes", GetCaseTypes(db))
-	router.GET("/api/v1/mediatypes", GetMediaTypes(db))
-	router.GET("/api/v1/categories", GetCategories(db))
-	router.GET("/api/v1/genres", GetGenres(db))
-	router.GET("/api/v1/publishers", GetPublishers(db))
-	router.DELETE("/api/v1/collection/:id", collect.DeleteCollection(db))
 	router.DELETE("/api/v1/entry/:id", entries.DeleteEntry(db))
+
+	router.GET("/api/v1/collections", GetCollections(db))
+	router.GET("/api/v1/collection/:id", GetCollection(db))
+	router.DELETE("/api/v1/collection/:id", collect.DeleteCollection(db))
+
+	router.GET("/api/v1/mediatypes", GetMediaTypes(db))
 	router.DELETE("/api/v1/mediatype/:id", stockdata.DeleteMediaType(db))
+	router.POST("/api/v1/mediatype", PostStock("mediatypes"))
+
+	router.GET("/api/v1/casetypes", GetCaseTypes(db))
 	router.DELETE("/api/v1/casetype/:id", stockdata.DeleteCaseType(db))
+	router.POST("/api/v1/casetype", PostStock("casetypes"))
+
+	router.GET("/api/v1/categories", GetCategories(db))
+	router.DELETE("/api/v1/category/:id", stockdata.DeleteCategory(db))
+	router.POST("/api/v1/category", PostStock("categories"))
+
+	router.GET("/api/v1/genres", GetGenres(db))
+	router.DELETE("/api/v1/genre/:id", stockdata.DeleteGenre(db))
+	router.POST("/api/v1/genre", PostStock("genres"))
+
+	router.GET("/api/v1/publishers", GetPublishers(db))
+	router.DELETE("/api/v1/publisher/:id", stockdata.DeletePublisher(db))
+	router.POST("/api/v1/publisher", PostStock("publishers"))
+
 	router.GET("/api/v1/about", GetAbout(db))
 	// log
 	log.Printf("Accessing SQLite: %s", config.Database)

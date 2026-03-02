@@ -22,7 +22,7 @@ function showErrorToast(message) {
         setTimeout(() => toast.remove(), 500);
     }, 3000);
 }
-const { createApp } = Vue;
+const { createApp, ref } = Vue;
 createApp({
     delimiters: ['[[', ']]'],
     data() {
@@ -154,7 +154,7 @@ createApp({
                 console.error("Fehler beim Laden der Genres:", error);
             }
         },
-        async fetchPublisher() {
+        async fetchPublishers() {
             try {
                 const response = await fetch('/api/v1/publishers');
                 const data = await response.json();
@@ -168,7 +168,13 @@ createApp({
                 try {
                     const response = await fetch(`/api/v1/${type}/${id}`, {
                         method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                        data: {
+                            type: type,
+                            name: name
+                        }
+                    })
                     });
                     if (response.ok) {
                         const data = await response.json();
@@ -199,14 +205,53 @@ createApp({
                 catch (err) {
                     console.error("Error:", err);
                 }
-        }
+        },
+        async creatething(name, type) {
+                const request = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        data: {
+                            type: type,
+                            name: name
+                        }
+                    })
+                };
+                const response = await fetch(`/api/v1/${type}`, request)
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Answer recieved:", data);
+                    showSuccessToast(data.message);
+                }
+                else {
+                    const data = await response.json();
+                    console.log("Answer recieved:", data);
+                    showErrorToast(data.message);
+                }
+                if (type === "casetype") {
+                    this.fetchCaseTypes();
+                } 
+                else if (type === "mediatype") {
+                    this.fetchMediaTypes();
+                }
+                else if (type === "category") {
+                    this.fetchCategories();
+                }
+                else if (type === "genre") {
+                    this.fetchGenres();
+                }
+                else if (type === "publisher") {
+                    this.fetchPublishers();
+                }
+
+            }
     },
     mounted() {
         this.fetchMediaTypes();
         this.fetchCaseTypes();
         this.fetchCategories();
         this.fetchGenres();
-        this.fetchPublisher();
+        this.fetchPublishers();
     }
 }) .mount('#stock');
 

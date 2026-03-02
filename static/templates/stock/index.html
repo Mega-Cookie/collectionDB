@@ -10,42 +10,15 @@
           <div>    
             <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">[[ media.name ]]</a>
           </div>
-            <div class="flex justify-self-end">
-              <button @click="deletething(media.mediatypeid, media.name, 'mediatype')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
-            </div>
-        </div>
-        <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
-          <div class="w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
-          <form action="/stock/mediatype/create" method="POST">
-            <input class="w-full text-s font-bold focus:outline-none" type="text" id="name" name="name" placeholder="Enter Media Type" required>
-            </div>
-            <button class="w-fit" type="submit">
-              <a class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create </a>
-            </button>
-          </form>
-        </div>
-      </div>
-      <div class="p-4 border-2 h-fit border-gray-300 rounded-xl">
-        <div class="pb-2">
-          <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Publishers</span>
-        </div>
-        <div v-for="pub in Publishers" :key="pub.publisherid" class="stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
-          <div>    
-            <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">[[ pub.name ]]</a>
+          <div class="flex justify-self-end">
+            <button @click="deletething(media.mediatypeid, media.name, 'mediatype')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
           </div>
-            <div class="flex justify-self-end">
-              <button @click="deletething(pub.publisherid, pub.name, 'publisher')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
-            </div>
         </div>
-        <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
-          <div class="w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
-          <form action="/stock/publisher/create" method="POST">
-            <input class="w-full text-s font-bold focus:outline-none" type="text" id="name" name="name" placeholder="Enter Publisher" required>
-            </div>
-            <button class="w-fit" type="submit">
-              <a class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create</a>
-            </button>
-          </form>
+        <div class="justify-items-end p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div class="flex w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
+            <input class="w-full text-s font-bold focus:outline-none" type="text" ref="medianame" placeholder="Enter Media Type" required>
+            <button @click="creatething($refs.medianame.value, 'mediatype')" class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create</button>
+          </div>
         </div>
       </div>
       <div class="p-4 border-2 h-fit border-gray-300 rounded-xl">
@@ -56,65 +29,72 @@
           <div>    
             <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">[[ caset.name ]]</a>
           </div>
-            <div class="flex justify-self-end">
-              <button @click="deletething(caset.casetypeid, caset.name, 'casetype')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
-            </div>
+          <div class="flex justify-self-end">
+            <button @click="deletething(caset.casetypeid, caset.name, 'casetype')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
+          </div>
         </div>
-        <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
-          <div class="w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
-          <form action="/stock/casetype/create" method="POST">
-            <input class="w-full text-s font-bold focus:outline-none" type="text" id="name" name="name" placeholder="Enter Case Type" required>
-            </div>
-            <button class="w-fit" type="submit">
-              <a class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create</a>
-            </button>
-          </form>
+        <div class="justify-items-end p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div class="flex w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
+            <input class="w-full text-s font-bold focus:outline-none" type="text" ref="casename" placeholder="Enter Case Type" required>
+            <button @click="creatething($refs.casename.value, 'casetype')" class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create</button>
+          </div>
         </div>
       </div>
       <div class="p-4 border-2 h-fit border-gray-300 rounded-xl">
         <div class="pb-2">
           <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Categories</span>
         </div>
-        <div v-for="cat in Categories" :key="cat.categoyid" class="stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+        <div v-for="category in Categories" :key="category.catid" class="stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
           <div>    
-            <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">[[ cat.name ]]</a>
+            <a class="flex w-fit bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">[[ category.name ]]</a>
           </div>
-            <div class="flex justify-self-end">
-              <button @click="deletething(cat.categoryid, cat.name, 'category')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
-            </div>
+          <div class="flex justify-self-end">
+            <button @click="deletething(category.catid, category.name, 'category')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
+          </div>
         </div>
-        <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
-          <div class="w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
-          <form action="/stock/category/create" method="POST">
-            <input class="w-full text-s font-bold focus:outline-none" type="text" id="name" name="name" placeholder="Enter Category" required>
-            </div>
-            <button class="w-fit" type="submit">
-              <a class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create</a>
-            </button>
-          </form>
+        <div class="justify-items-end p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div class="flex w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
+            <input class="w-full text-s font-bold focus:outline-none" type="text" ref="catname" placeholder="Enter Category" required>
+            <button @click="creatething($refs.catname.value, 'category')" class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create</button>
+          </div>
         </div>
       </div>
       <div class="p-4 border-2 h-fit border-gray-300 rounded-xl">
         <div class="pb-2">
           <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Genres</span>
         </div>
-        <div v-for="genre in Genres" :key="genre.genreid" class="grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+        <div v-for="genre in Genres" :key="genre.genreid" class="stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
           <div>    
             <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">[[ genre.name ]]</a>
           </div>
-            <div class="flex justify-self-end">
-              <button @click="deletething(genre.genreid, genre.name, 'genre')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
-            </div>
+          <div class="flex justify-self-end">
+            <button @click="deletething(genre.genreid, genre.name, 'genre')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
+          </div>
         </div>
-        <div class="justify-items-end grid grid-cols-2 p-2 border-2 my-1 border-gray-300 rounded-xl">
-          <div class="w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
-          <form action="/stock/genre/create" method="POST">
-            <input class="w-full text-s font-bold focus:outline-none" type="text" id="name" name="name" placeholder="Enter Genre" required>
-            </div>
-            <button class="w-fit" type="submit">
-              <a class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create</a>
-            </button>
-          </form>
+        <div class="justify-items-end grid p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div class="flex w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
+            <input class="w-full text-s font-bold focus:outline-none" type="text" ref="genname" placeholder="Enter Genre" required>
+            <button @click="creatething($refs.genname.value, 'genre')" class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create</button>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 border-2 h-fit border-gray-300 rounded-xl">
+        <div class="pb-2">
+          <span class="text-xl border-2 border-blue-300 text-blue-800 py-2 px-2 rounded-xl flex">Publishers</span>
+        </div>
+        <div v-for="publisher in Publishers" :key="publisher.publisher" class="stock-card grid grid-cols-2 justify-between p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div>    
+            <a class="w-fit flex bg-blue-200 text-blue-800 py-2 px-2 rounded-xl">[[ publisher.name ]]</a>
+          </div>
+          <div class="flex justify-self-end">
+            <button @click="deletething(publisher.publisherid, publisher.name, 'publisher')" class="w-fit bg-orange-200 text-xs text-orange-800 my-0.5 px-2 rounded-md border-2 border-orange-800 hover:bg-orange-400">Delete</button>
+          </div>
+        </div>
+        <div class="justify-items-end p-2 border-2 my-1 border-gray-300 rounded-xl">
+          <div class="flex w-full border-2 p-1 my-1 border-gray-300 rounded-xl">
+            <input class="w-full text-s font-bold focus:outline-none" type="text" ref="pubname" placeholder="Enter Publisher" required>
+            <button @click="creatething($refs.pubname.value, 'publisher')" class="w-fit flex text-xs bg-green-200 text-green-800 py-2 px-2 rounded-md border-2 border-green-800 hover:bg-green-400">Create</button>
+          </div>
         </div>
       </div>
     </div>
