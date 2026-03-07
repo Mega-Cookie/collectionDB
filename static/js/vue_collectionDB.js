@@ -66,6 +66,7 @@ createApp({
                         } 
                         else if (type === "entry") {
                             this.fetchEntries();
+                            this.fetchCollections();
                         }
                     }
                     else {
